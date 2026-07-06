@@ -1,6 +1,6 @@
 import Foundation
 
-enum AppRoute {
+enum AppRoute: Hashable {
     case auth
     case email
     case registration
