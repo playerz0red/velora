@@ -4,6 +4,12 @@ struct AuthDivider: View {
     
     private let title: String
     
+    init(
+        title: String,
+    ) {
+        self.title = title
+    }
+    
     var body: some View {
         HStack(spacing: 5) {
             Rectangle()

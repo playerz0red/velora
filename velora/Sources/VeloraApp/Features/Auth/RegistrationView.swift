@@ -75,6 +75,7 @@ struct RegistrationView: View {
             
             AuthButton(
                 title: "Зарегистрироваться",
+                icon: nil,
                 action: {
                 }
             )

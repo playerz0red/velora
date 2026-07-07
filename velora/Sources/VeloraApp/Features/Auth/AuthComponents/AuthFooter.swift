@@ -5,6 +5,14 @@ struct AuthFooter: View {
     private var title: String
     private var buttonLabel: String
     
+    init(
+        title: String,
+        buttonLabel: String
+    ) {
+        self.title = title
+        self.buttonLabel = buttonLabel
+    }
+    
     var body: some View {
         HStack(spacing: 6) {
             Text(title)

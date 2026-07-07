@@ -62,6 +62,7 @@ struct EmailView: View {
             
             AuthButton(
                 title: "Войти",
+                icon: nil,
                 action: {
                 }
             )

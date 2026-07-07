@@ -4,6 +4,14 @@ struct AuthLogo: View {
 
     private let title: String
     private let subtitle: String
+    
+    init(
+        title: String,
+        subtitle: String
+    ) {
+        self.title = title
+        self.subtitle = subtitle
+    }
 
     var body: some View {
         VStack(spacing: 12) {
