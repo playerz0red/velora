@@ -1,6 +1,12 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "" : {
+
+    },
+    "%@" : {
+
+    },
     "%lld Items" : {
       "comment" : "Header title for a list that contains the number of items",
       "extractionState" : "stale",
@@ -236,6 +242,7 @@
     },
     "Home" : {
       "comment" : "Tab bar item title for the Home tab",
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -291,6 +298,12 @@
           }
         }
       }
+    },
+    "LocalizedStringResource.networkErrorSendingUserInfo(error.localizedDescription)" : {
+
+    },
+    "LocalizedStringResource.permissionDenied" : {
+
     },
     "Name" : {
       "comment" : "Placeholder title for the Name field in a form",
@@ -499,6 +512,9 @@
           }
         }
       }
+    },
+    "Unknown error occured: %@" : {
+
     },
     "Velora" : {
       "comment" : "The name of the app.",
