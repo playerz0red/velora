@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 
+@MainActor
 protocol AuthServiceProtocol {
     var signPublisher: AnyPublisher<Bool, Never> { get }
     
@@ -17,6 +18,7 @@ protocol AuthServiceProtocol {
     func changePassword(email: String) async throws(AuthServiceError)
 }
 
+@MainActor
 final class AuthService: AuthServiceProtocol {
     
     private let authManager: AuthManagerProtocol
