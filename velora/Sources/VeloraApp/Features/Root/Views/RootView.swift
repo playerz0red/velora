@@ -5,16 +5,35 @@ enum ContentTab: String, Hashable {
 }
 
 struct RootView: View {
-    @State private var coordinator = AppCoordinator()
+    @AppStorage("tab") var tab = ContentTab.welcome
+    @AppStorage("name") var welcomeName = "Skipper"
+    @AppStorage("appearance") var appearance = ""
+    @State var viewModel = RootViewModel()
 
     var body: some View {
-        NavigationStack(path: $coordinator.path) {
-            AuthView()
-                .navigationDestination(for: AppRoute.self) { route in
-                    coordinator.destination(for: route)
-                }
+        TabView(selection: $tab) {
+            NavigationStack {
+                WelcomeView(welcomeName: $welcomeName)
+            }
+            .tabItem { Label("Welcome", systemImage: "heart.fill") }
+            .tag(ContentTab.welcome)
+
+            NavigationStack {
+                ItemListView()
+                    .navigationTitle(Text("\(viewModel.items.count) Items"))
+            }
+            .tabItem { Label("Home", systemImage: "house.fill") }
+            .tag(ContentTab.home)
+
+            NavigationStack {
+                SettingsView(appearance: $appearance, welcomeName: $welcomeName)
+                    .navigationTitle("Settings")
+            }
+            .tabItem { Label("Settings", systemImage: "gearshape.fill") }
+            .tag(ContentTab.settings)
         }
-        .environment(coordinator)
+        .environment(viewModel)
+        .preferredColorScheme(appearance == "dark" ? .dark : appearance == "light" ? .light : nil)
     }
 }
 

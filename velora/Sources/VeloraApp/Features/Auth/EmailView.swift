@@ -67,7 +67,7 @@ struct EmailView: View {
                 icon: "envelope",
                 text: $email
             )
-            
+
             AuthTextField(
                 title: "Пароль",
                 placeholder: "Введите пароль",
@@ -76,11 +76,10 @@ struct EmailView: View {
                 text: $password
             )
             
-            EmailButton(
+            AuthButton(
                 title: "Войти",
                 icon: "",
             )
-            
             HStack(spacing: 5){
                 Rectangle()
                     .fill(Color.gray.opacity(0.22))
@@ -95,13 +94,12 @@ struct EmailView: View {
                     .frame(height: 1)
                 
             }
-            
-            EmailButton(
+            AuthButton(
                 title: "Продолжить с Google",
                 icon: "globe.americas.fill",
             )
             
-            EmailButton(
+            AuthButton(
                 title: "Продолжить с Apple",
                 icon: "apple.logo",
             )
@@ -121,61 +119,61 @@ struct EmailView: View {
             .padding(.top, 4)
         }
     }
+}
 
-    struct AuthTextField: View {
-        let title: String
-        let placeholder: String
-        let icon: String
-        var isSecure: Bool = false
-        
-        @Binding var text: String
-        @State private var isPasswordVisible = false
-        
-        var body: some View {
-            VStack(alignment: .leading, spacing: 12) {
-                Text(title)
-                    .font(.system(size: 18, weight: .medium))
-                    .foregroundStyle(.black)
-                
-                HStack(spacing: 14) {
-                    Image(systemName: icon)
-                        .font(.system(size: 22))
-                        .foregroundStyle(.gray)
-                    
-                    if isSecure && !isPasswordVisible {
-                        SecureField(placeholder, text: $text)
-                            .font(.system(size: 20))
-                    } else {
-                        TextField(placeholder, text: $text)
-                            .font(.system(size: 20))
-                            .keyboardType(isSecure ? .default : .emailAddress)
-                            .autocorrectionDisabled()
-                    }
-                    
-                    if isSecure {
-                        Button {
-                            isPasswordVisible.toggle()
-                        } label: {
-                            Image(systemName: isPasswordVisible ? "eye" : "eye.slash")
-                                .font(.system(size: 22))
-                                .foregroundStyle(.gray)
-                        }
-                        .buttonStyle(.plain)
-                    }
+struct AuthTextField: View {
+    let title: String
+    let placeholder: String
+    let icon: String
+    var isSecure: Bool = false
+
+    @Binding var text: String
+    @State private var isPasswordVisible = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.system(size: 18, weight: .medium))
+                .foregroundStyle(.black)
+
+            HStack(spacing: 14) {
+                Image(systemName: icon)
+                    .font(.system(size: 22))
+                    .foregroundStyle(.gray)
+
+                if isSecure && !isPasswordVisible {
+                    SecureField(placeholder, text: $text)
+                        .font(.system(size: 20))
+                } else {
+                    TextField(placeholder, text: $text)
+                        .font(.system(size: 20))
+                        .keyboardType(isSecure ? .default : .emailAddress)
+                        .autocorrectionDisabled()
                 }
-                .padding(.horizontal, 20)
-                .frame(height: 64)
-                .background(Color.white.opacity(0.8))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
-                        .stroke(Color.gray.opacity(0.18), lineWidth: 1.2)
+
+                if isSecure {
+                    Button {
+                        isPasswordVisible.toggle()
+                    } label: {
+                        Image(systemName: isPasswordVisible ? "eye" : "eye.slash")
+                            .font(.system(size: 22))
+                            .foregroundStyle(.gray)
+                    }
+                    .buttonStyle(.plain)
                 }
-                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
             }
+            .padding(.horizontal, 20)
+            .frame(height: 64)
+            .background(Color.white.opacity(0.8))
+            .overlay {
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .stroke(Color.gray.opacity(0.18), lineWidth: 1.2)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
         }
     }
     
-    struct EmailButton: View {
+    struct AuthButton: View {
         let title: String
         var icon: String? = nil
         
