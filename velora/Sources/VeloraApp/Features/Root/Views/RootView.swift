@@ -5,13 +5,16 @@ enum ContentTab: String, Hashable {
 }
 
 struct RootView: View {
-    @AppStorage("tab") var tab = ContentTab.welcome
-    @AppStorage("name") var welcomeName = "Skipper"
-    @AppStorage("appearance") var appearance = ""
-    @State var viewModel = RootViewModel()
+    @State private var coordinator = AppCoordinator()
 
     var body: some View {
-        AuthView()
+        NavigationStack(path: $coordinator.path) {
+            AuthView()
+                .navigationDestination(for: AppRoute.self) { route in
+                    coordinator.destination(for: route)
+                }
+        }
+        .environment(coordinator)
     }
 }
 

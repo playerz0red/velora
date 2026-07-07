@@ -1,16 +1,13 @@
-//
-//  AuthView.swift
-//  velora
-//
-//  Created by Ангелина Голубовская on 1.07.26.
-//
-
 import SwiftUI
 
 struct AuthView: View {
+    
+    @Environment(AppCoordinator.self)
+    private var coordinator
+    
     var body: some View {
         ZStack(alignment: .bottom) {
-            background
+            AuthBackground()
             
             VStack(spacing: 18) {
                 Spacer()
@@ -27,18 +24,6 @@ struct AuthView: View {
             authCard
         }
         .ignoresSafeArea(edges: .bottom)
-    }
-    
-    private var background: some View {
-        LinearGradient(
-            colors: [
-                Color(red: 1.0, green: 0.95, blue: 0.98),
-                Color.white
-            ],
-            startPoint: .top,
-            endPoint: .bottom
-        )
-        .ignoresSafeArea()
     }
     
     private var logoBlock: some View {
@@ -98,16 +83,23 @@ struct AuthView: View {
                 AuthButton(
                     title: "Войти по email",
                     icon: "envelope",
+                    action: {
+                        coordinator.push(.email)
+                    }
                 )
                 
                 AuthButton(
                     title: "Продолжить с Google",
                     icon: "globe.americas.fill",
+                    action: {
+                    }
                 )
                 
                 AuthButton(
                     title: "Продолжить с Apple",
                     icon: "apple.logo",
+                    action: {
+                    }
                 )
             }
             .padding(.top, 8)
@@ -142,45 +134,7 @@ struct AuthView: View {
     }
 }
 
-struct AuthButton: View {
-    let title: String
-    var icon: String? = nil
-    
-    var body: some View {
-        Button {
-            
-        } label: {
-            HStack(spacing: 12) {
-                if let icon {
-                    Image(systemName: icon)
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundStyle(.black)
-                }
-                
-                Text(title)
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(.black)
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 54)
-            .background(
-                LinearGradient(
-                    colors: [.clear, Color(red: 0.95, green: 0.09, blue: 0.5)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-            .overlay {
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .stroke(Color.black.opacity(0.48), lineWidth: 1)
-            }
-            .shadow(color: .black.opacity(0.04), radius: 10, x: 0, y: 4)
-            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-        }
-        .buttonStyle(.plain)
-    }
-}
-
 #Preview {
     AuthView()
+        .environment(AppCoordinator())
 }
