@@ -2,8 +2,8 @@ import SwiftUI
 
 struct AuthLogo: View {
 
-    let title: String
-    let subtitle: String
+    private let title: String
+    private let subtitle: String
 
     var body: some View {
         VStack(spacing: 12) {

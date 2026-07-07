@@ -66,20 +66,8 @@ struct EmailView: View {
                 }
             )
             
-            HStack(spacing: 5){
-                Rectangle()
-                    .fill(Color.gray.opacity(0.22))
-                    .frame(height: 1)
-                
-                Text("или")
-                    .font(.system(size: 18))
-                    .foregroundStyle(.secondary)
-                
-                Rectangle()
-                    .fill(Color.gray.opacity(0.22))
-                    .frame(height: 1)
-                
-            }
+            AuthDivider(
+                title: "или")
             
             AuthButton(
                 title: "Продолжить с Google",
@@ -95,19 +83,9 @@ struct EmailView: View {
                 }
             )
             
-            HStack(spacing: 6) {
-                Text("Нет аккаунта?")
-                    .foregroundStyle(.secondary)
-                
-                Button {
-                } label: {
-                    Text("Зарегистрироваться")
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.pink)
-                }
-            }
-            .font(.system(size: 16))
-            .padding(.top, 4)
+            AuthFooter(
+                title: "Нет аккаунта?",
+                buttonLabel: "Зарегистрироваться")
         }
     }
 }

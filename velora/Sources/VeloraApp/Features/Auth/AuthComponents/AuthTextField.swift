@@ -6,7 +6,7 @@ struct AuthTextField: View {
     private let icon: String
     private var isSecure: Bool = false
     
-    @Binding var text: String
+    @Binding private var text: String
     @State private var isPasswordVisible = false
     
     init(

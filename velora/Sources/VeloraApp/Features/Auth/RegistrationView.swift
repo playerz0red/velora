@@ -4,7 +4,7 @@ struct RegistrationView: View {
     @State private var email = ""
     @State private var password = ""
     @State private var firstName = ""
-    @State private var LastName = ""
+    @State private var lastName = ""
     @State private var confirmPassword = ""
     
     var body: some View {
@@ -47,7 +47,7 @@ struct RegistrationView: View {
                 title: "Фамилия",
                 placeholder: "Фамилия",
                 icon: "person",
-                text: $LastName
+                text: $lastName
             )
             
             AuthTextField(
@@ -79,20 +79,8 @@ struct RegistrationView: View {
                 }
             )
             
-            HStack(spacing: 5){
-                Rectangle()
-                    .fill(Color.gray.opacity(0.22))
-                    .frame(height: 1)
-                
-                Text("или")
-                    .font(.system(size: 18))
-                    .foregroundStyle(.secondary)
-                
-                Rectangle()
-                    .fill(Color.gray.opacity(0.22))
-                    .frame(height: 1)
-                
-            }
+            AuthDivider(
+                title: "или")
             
             AuthButton(
                 title: "Продолжить с Google",
@@ -108,19 +96,9 @@ struct RegistrationView: View {
                 }
             )
             
-            HStack(spacing: 6) {
-                Text("Есть аккаунт?")
-                    .foregroundStyle(.secondary)
-                
-                Button {
-                } label: {
-                    Text("Войти")
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.pink)
-                }
-            }
-            .font(.system(size: 16))
-            .padding(.top, 4)
+            AuthFooter(
+                title: "Есть аккаунт?",
+                buttonLabel: "Войти")
         }
     }
 }

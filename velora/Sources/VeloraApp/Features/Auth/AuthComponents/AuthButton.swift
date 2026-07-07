@@ -1,9 +1,9 @@
 import SwiftUI
 
 struct AuthButton: View {
-    let title: String
-    var icon: String? = nil
-    let action: () -> Void
+    private let title: String
+    private var icon: String? = nil
+    private let action: () -> Void
     
     var body: some View {
         Button {
