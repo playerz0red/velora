@@ -8,10 +8,6 @@
 import SwiftUI
 
 struct AuthView: View {
-    
-    @Environment(AppCoordinator.self)
-    private var coordinator
-    
     var body: some View {
         ZStack(alignment: .bottom) {
             background
@@ -102,23 +98,16 @@ struct AuthView: View {
                 AuthButton(
                     title: "Войти по email",
                     icon: "envelope",
-                    action: {
-                        coordinator.push(.email)
-                    }
                 )
                 
                 AuthButton(
                     title: "Продолжить с Google",
                     icon: "globe.americas.fill",
-                    action: {
-                    }
                 )
                 
                 AuthButton(
                     title: "Продолжить с Apple",
                     icon: "apple.logo",
-                    action: {
-                    }
                 )
             }
             .padding(.top, 8)
@@ -156,11 +145,10 @@ struct AuthView: View {
 struct AuthButton: View {
     let title: String
     var icon: String? = nil
-    let action: () -> Void
     
     var body: some View {
         Button {
-            action()
+            
         } label: {
             HStack(spacing: 12) {
                 if let icon {
@@ -195,5 +183,4 @@ struct AuthButton: View {
 
 #Preview {
     AuthView()
-        .environment(AppCoordinator())
 }
