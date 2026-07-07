@@ -9,6 +9,7 @@ import Foundation
 import SkipFirebaseAuth
 import Combine
 
+@MainActor
 protocol AuthManagerProtocol {
     var isSignedPublisher: AnyPublisher<Bool, Never> { get }
     var isSignedIn: Bool { get }
@@ -19,6 +20,7 @@ protocol AuthManagerProtocol {
     func changePassword(email: String) async throws(AuthManagerError)
 }
 
+@MainActor
 protocol UserSessionProtocol {
     var userId: String? { get }
     var username: String? { get }
@@ -26,6 +28,7 @@ protocol UserSessionProtocol {
     func signOut() throws(AuthManagerError)
 }
 
+@MainActor
 final class FirebaseAuthManager: AuthManagerProtocol, UserSessionProtocol  {
     
     var username: String? {
@@ -45,7 +48,7 @@ final class FirebaseAuthManager: AuthManagerProtocol, UserSessionProtocol  {
     }
     
     private var signSubject = PassthroughSubject<Bool, Never>()
-    private var handle: AuthStateDidChangeListenerHandle?
+    private nonisolated(unsafe) var handle: AuthStateDidChangeListenerHandle?
     
     init() {
         listenToAuthState()
