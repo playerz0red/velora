@@ -1,8 +1,10 @@
 import SwiftUI
 
 struct EmailView: View {
-    @State private var email = ""
-    @State private var password = ""
+    @Bindable var viewModel: AuthViewModel
+    
+    @Environment(AppCoordinator.self)
+    private var coordinator
     
     var body: some View {
         ZStack {
@@ -24,18 +26,6 @@ struct EmailView: View {
         }
     }
     
-    private var background: some View {
-        LinearGradient(
-            colors: [
-                Color(red: 1.0, green: 0.95, blue: 0.98),
-                Color.white
-            ],
-            startPoint: .top,
-            endPoint: .bottom
-        )
-        .ignoresSafeArea()
-    }
-    
     private var logoBlock: some View {
         AuthLogo(
             title: "Вход в аккаунт",
@@ -49,7 +39,7 @@ struct EmailView: View {
                 title: "Email",
                 placeholder: "Введите email",
                 icon: "envelope",
-                text: $email
+                text: $viewModel.model.email
             )
             
             AuthTextField(
@@ -57,13 +47,14 @@ struct EmailView: View {
                 placeholder: "Введите пароль",
                 icon: "lock",
                 isSecure: true,
-                text: $password
+                text: $viewModel.model.password
             )
             
             AuthButton(
                 title: "Войти",
                 icon: nil,
                 action: {
+                    viewModel.loginByCredendtials()
                 }
             )
             
@@ -87,11 +78,14 @@ struct EmailView: View {
             AuthFooter(
                 title: "Нет аккаунта?",
                 buttonLabel: "Зарегистрироваться")
+            {
+                coordinator.push(.registration)
+            }
         }
     }
 }
 
 
-#Preview {
-    EmailView()
-}
+//#Preview {
+//    EmailView()
+//}

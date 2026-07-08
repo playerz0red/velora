@@ -51,6 +51,7 @@ final class ValidationService: ValidationServiceProtocol {
         RegistrationValidationResult(
             nameError: validateName(registerForm.name),
             emailError: validateEmail(registerForm.email),
+            lastNameError: validateEmail(registerForm.name)
             passwordError: validatePassword(registerForm.password),
             confirmPasswordError: validateConfirmPassword(
                 password: registerForm.password,
