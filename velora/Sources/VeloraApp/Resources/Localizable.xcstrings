@@ -258,7 +258,6 @@
     },
     "Home" : {
       "comment" : "Tab bar item title for the Home tab",
-      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {

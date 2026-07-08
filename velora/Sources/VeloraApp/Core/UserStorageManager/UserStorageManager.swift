@@ -8,6 +8,7 @@
 import Foundation
 import SkipFirebaseFirestore
 
+@MainActor
 protocol UserStorageManagerProtocol {
     func createUserProfile(name: String?, email: String?, id: String) async throws(UserStorageError)
     func addUserAvatar(forUserId: String, avatarId: String) async throws(UserStorageError)
@@ -15,6 +16,7 @@ protocol UserStorageManagerProtocol {
     func getUser(with id: String) async -> UserDTO?
 }
 
+@MainActor
 final class UserStorageManager: UserStorageManagerProtocol {
     
     private let database = Firestore.firestore()
