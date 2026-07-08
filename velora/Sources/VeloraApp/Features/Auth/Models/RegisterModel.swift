@@ -8,8 +8,9 @@
 import Foundation
 
 struct RegisterModel {
-    var name: String
-    var email: String
-    var password: String
-    var passwordConfirmation: String
+    var name: String = ""
+    var lastName: String = ""
+    var email: String = ""
+    var password: String = ""
+    var passwordConfirmation: String = ""
 }
