@@ -10,6 +10,7 @@ import Foundation
 struct RegistrationValidationResult: Equatable {
     let nameError: ValidationError.NameError?
     let emailError: ValidationError.EmailError?
+    let lastNameError: ValidationError.NameError?
     let passwordError: ValidationError.PasswordError?
     let confirmPasswordError: ValidationError.PasswordError?
     
@@ -51,6 +52,7 @@ final class ValidationService: ValidationServiceProtocol {
         RegistrationValidationResult(
             nameError: validateName(registerForm.name),
             emailError: validateEmail(registerForm.email),
+            lastNameError: validateName(registerForm.name),
             passwordError: validatePassword(registerForm.password),
             confirmPasswordError: validateConfirmPassword(
                 password: registerForm.password,
@@ -130,6 +132,7 @@ extension RegistrationValidationResult {
     init() {
         self.nameError = nil
         self.emailError = nil
+        self.lastNameError = nil
         self.passwordError = nil
         self.confirmPasswordError = nil
     }

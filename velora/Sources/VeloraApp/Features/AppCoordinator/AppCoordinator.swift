@@ -1,9 +1,10 @@
 import SwiftUI
 
 @Observable
-
+@MainActor
 final class AppCoordinator {
     
+    private let factory = AppFactory()
     var path = NavigationPath()
     
     func push (_ route: AppRoute) {
@@ -25,13 +26,19 @@ extension AppCoordinator {
     func destination(for route: AppRoute) -> some View {
         switch route {
         case .auth:
-            AuthView()
+            AuthView(
+                viewModel: factory.makeAuthViewModel()
+            )
             
         case .email:
-            EmailView()
+            EmailView(
+                viewModel: factory.makeAuthViewModel()
+            )
             
         case .registration:
-            Text("Registration")
+            RegistrationView(
+                viewModel: factory.makeRegistrationViewModel()
+            )
             
         case .home:
             Text("Home")

@@ -1,11 +1,10 @@
 import SwiftUI
 
 struct RegistrationView: View {
-    @State private var email = ""
-    @State private var password = ""
-    @State private var firstName = ""
-    @State private var lastName = ""
-    @State private var confirmPassword = ""
+    @Bindable private var viewModel: RegisterViewModel
+    
+    @Environment(AppCoordinator.self)
+    private var coordinator
     
     var body: some View {
         ZStack {
@@ -40,21 +39,21 @@ struct RegistrationView: View {
                 title: "Имя",
                 placeholder: "Имя",
                 icon: "person",
-                text: $firstName
+                text: $viewModel.model.name
             )
             
             AuthTextField(
                 title: "Фамилия",
                 placeholder: "Фамилия",
                 icon: "person",
-                text: $lastName
+                text: $viewModel.model.lastName
             )
             
             AuthTextField(
                 title: "Email",
                 placeholder: "Email",
                 icon: "envelope",
-                text: $email
+                text: $viewModel.model.email
             )
             
             AuthTextField(
@@ -62,7 +61,7 @@ struct RegistrationView: View {
                 placeholder: "Введите пароль",
                 icon: "lock",
                 isSecure: true,
-                text: $password
+                text: $viewModel.model.password
             )
             
             AuthTextField(
@@ -70,13 +69,13 @@ struct RegistrationView: View {
                 placeholder: "Подтвердите пароль",
                 icon: "lock",
                 isSecure: true,
-                text: $password
+                text: $viewModel.model.passwordConfirmation
             )
             
             AuthButton(
                 title: "Зарегистрироваться",
                 icon: nil,
-                action: {
+                action: {viewModel.register()
                 }
             )
             
@@ -100,10 +99,13 @@ struct RegistrationView: View {
             AuthFooter(
                 title: "Есть аккаунт?",
                 buttonLabel: "Войти")
+            {
+                coordinator.push(.email)
+            }
         }
     }
 }
 
-#Preview {
-    RegistrationView()
-}
+//#Preview {
+//    RegistrationView()
+//}

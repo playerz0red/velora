@@ -6,10 +6,11 @@ enum ContentTab: String, Hashable {
 
 struct RootView: View {
     @State private var coordinator = AppCoordinator()
+    private let factory = AppFactory()
 
     var body: some View {
         NavigationStack(path: $coordinator.path) {
-            AuthView()
+            AuthView(viewModel: factory.makeAuthViewModel())
                 .navigationDestination(for: AppRoute.self) { route in
                     coordinator.destination(for: route)
                 }

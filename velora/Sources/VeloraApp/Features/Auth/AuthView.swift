@@ -2,6 +2,8 @@ import SwiftUI
 
 struct AuthView: View {
     
+    @Bindable private var viewModel: AuthViewModel
+    
     @Environment(AppCoordinator.self)
     private var coordinator
     
@@ -108,16 +110,11 @@ struct AuthView: View {
                 .fill(Color.gray.opacity(0.22))
                 .frame(height: 1)
             
-            HStack(spacing: 6) {
-                Text("Нет аккаунта?")
-                    .foregroundStyle(.secondary)
-                
-                Button {
-                } label: {
-                    Text("Зарегистрироваться")
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.pink)
-                }
+            AuthFooter(
+                title: "Нет аккаунта?",
+                buttonLabel: "Зарегистрироваться")
+            {
+                coordinator.push(.registration)
             }
             .font(.system(size: 16))
             .padding(.top, 4)
@@ -134,7 +131,7 @@ struct AuthView: View {
     }
 }
 
-#Preview {
-    AuthView()
-        .environment(AppCoordinator())
-}
+//#Preview {
+//    AuthView()
+//        .environment(AppCoordinator())
+//}
