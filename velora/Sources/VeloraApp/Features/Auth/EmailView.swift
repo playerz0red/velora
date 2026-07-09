@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct EmailView: View {
-    @Bindable var viewModel: AuthViewModel
+    @Bindable private var viewModel: AuthViewModel
     
     @Environment(AppCoordinator.self)
     private var coordinator
