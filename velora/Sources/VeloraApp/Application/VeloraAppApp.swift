@@ -1,5 +1,6 @@
 import Foundation
 import OSLog
+import SkipFirebaseCore
 import SwiftUI
 
 /// A logger for the VeloraApp module.
@@ -9,7 +10,9 @@ let logger: Logger = Logger(subsystem: "com.palina.velora", category: "VeloraApp
 ///
 /// The default implementation merely loads the `ContentView` for the app and logs a message.
 public struct VeloraAppRootView : View {
+    
     public init() {
+        FirebaseApp.configure()
     }
 
     public var body: some View {
