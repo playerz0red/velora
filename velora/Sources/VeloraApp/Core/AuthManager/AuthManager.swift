@@ -8,6 +8,12 @@
 import Foundation
 import SkipFirebaseAuth
 import Combine
+import SkipFirebaseCore
+
+#if os(iOS)
+import AuthenticationServices
+import GoogleSignIn
+#endif
 
 @MainActor
 protocol AuthManagerProtocol {
@@ -18,6 +24,8 @@ protocol AuthManagerProtocol {
     func signIn(email: String, password: String) async throws(AuthManagerError)
     func signOut() throws(AuthManagerError)
     func changePassword(email: String) async throws(AuthManagerError)
+    func signInWithApple() async throws(AuthManagerError) -> AuthUserModel?
+    func signWithGoogle() async throws(AuthManagerError) -> AuthUserModel?
 }
 
 @MainActor
@@ -99,6 +107,87 @@ final class FirebaseAuthManager: AuthManagerProtocol, UserSessionProtocol  {
         }
     }
     
+    func signWithGoogle() async throws(AuthManagerError) -> AuthUserModel? {
+        guard let clientID = FirebaseApp.app()?.options.clientID else { throw .emailIsAlreadyInUse }
+        let config = GIDConfiguration(clientID: clientID)
+        GIDSignIn.sharedInstance.configuration = config
+        
+        guard let topViewController = Utils.getTopViewController() else {
+            throw .unknown(NSError(domain: "Auth", code: -2, userInfo: [NSLocalizedDescriptionKey: "UI not ready"]))
+        }
+        
+        do {
+            let result = try await GIDSignIn.sharedInstance.signIn(withPresenting: topViewController)
+            
+            guard let idToken = result.user.idToken?.tokenString else { throw AuthManagerError.missGoogleIdToken }
+            
+            let accessToken = result.user.accessToken.tokenString
+            let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: accessToken)
+            let authResult = try await Auth.auth().signIn(with: credential)
+            let changeRequest = authResult.user.createProfileChangeRequest()
+            changeRequest.displayName = result.user.profile?.name
+            try await changeRequest.commitChanges()
+            
+            if authResult.additionalUserInfo?.isNewUser == true {
+                return AuthUserModel(uid: authResult.user.uid, firstName: result.user.profile?.name, email: authResult.user.email)
+            } else {
+                return nil
+            }
+            
+        } catch {
+            if let googleError = error as? NSError, googleError.code == GIDSignInError.canceled.rawValue {
+                 throw .userCancelledSignIn
+             }
+             
+             if let managerError = error as? AuthManagerError {
+                 throw managerError
+             }
+             throw castFirebaseError(error)
+        }
+    }
+    
+    func signInWithApple() async throws(AuthManagerError) -> AuthUserModel? {
+        #if !skip
+        let appleIDProvider = ASAuthorizationAppleIDProvider()
+        let request = appleIDProvider.createRequest()
+        request.requestedScopes = [.fullName, .email]
+        
+        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+        
+        do {
+            return try await withCheckedThrowingContinuation { continuation in
+                let delegate = AppleSignInDelegate() { result in
+                    switch result {
+                    case .success(let authResult):
+                        if authResult.additionalUserInfo?.isNewUser == true {
+                            continuation.resume(returning: AuthUserModel(uid: authResult.user.uid, firstName: authResult.user.displayName, email: authResult.user.email))
+                        } else {
+                            continuation.resume(returning: nil)
+                        }
+                    case .failure(let error):
+                        continuation.resume(throwing: error)
+                    }
+                }
+                SetRetainer.retain(delegate)
+                
+                authorizationController.delegate = delegate
+                authorizationController.performRequests()
+            }
+        } catch {
+            throw .appleSignInError(error)
+        }
+        #else
+        let provider = OAuthProvider(providerID: .apple)
+        provider.scopes = ["email", "name"]
+        let result = try await Auth.auth().signIn(with: provider)
+        if result.additionalUserInfo.isNewUser {
+            return AuthUserModel(uid: result.user.uid, firstName: result.user.displayName, email: result.user.email)
+        } else {
+            return nil
+        }
+        #endif
+    }
+    
     private func listenToAuthState() {
         handle = Auth.auth().addStateDidChangeListener { [weak self] (auth, user) in
             let isLogged = (user != nil)
@@ -121,13 +210,5 @@ final class FirebaseAuthManager: AuthManagerProtocol, UserSessionProtocol  {
         default:
             return .unknown(error)
         }
-    }
-}
-
-extension FirebaseAuthManager {
-    struct UserStorageModel {
-        let uid: String
-        let name: String?
-        let email: String?
     }
 }
