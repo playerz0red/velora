@@ -23,6 +23,26 @@ final class AuthViewModel {
         self.validationService = validationService
     }
     
+    func loginWithGoogle() {
+        Task {
+            do {
+                try await authService.signWithGoogle()
+            } catch let error as AuthServiceError {
+                self.error = error
+            }
+        }
+    }
+    
+    func loginWithApple() {
+        Task {
+            do {
+                try await authService.signWithApple()
+            } catch let error as AuthServiceError {
+                self.error = error
+            }
+        }
+    }
+    
     func loginByCredendtials() {
         validationResult = validationService.validateLogin(loginForm: model)
         guard validationResult?.isValid == true else { return }

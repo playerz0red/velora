@@ -4,6 +4,7 @@ struct AuthView: View {
     
     @Environment(AppCoordinator.self)
     private var coordinator
+    @State private var viewModel = AuthViewModel(authService: AuthService(authManager: FirebaseAuthManager(), userStorageManager: UserStorageManager()), validationService: ValidationService())
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -92,6 +93,7 @@ struct AuthView: View {
                     title: "Продолжить с Google",
                     icon: "globe.americas.fill",
                     action: {
+                        viewModel.loginWithGoogle()
                     }
                 )
                 
@@ -99,6 +101,7 @@ struct AuthView: View {
                     title: "Продолжить с Apple",
                     icon: "apple.logo",
                     action: {
+                        viewModel.loginWithApple()
                     }
                 )
             }
