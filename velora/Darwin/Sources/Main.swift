@@ -8,7 +8,7 @@ private typealias AppDelegate = VeloraAppAppDelegate
 @main struct AppMain: App {
     @AppDelegateAdaptor(AppMainDelegate.self) var appDelegate
     @Environment(\.scenePhase) private var scenePhase
-
+    
     var body: some Scene {
         WindowGroup {
             AppRootView()

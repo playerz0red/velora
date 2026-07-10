@@ -11,6 +11,7 @@ enum AuthManagerError: Error {
     case emailIsAlreadyInUse
     case userNotFound
     case missGoogleIdToken
+    case appleSignInError(Error)
     case userCancelledSignIn
     case invalidEmail(Error)
     case networkError(Error)
@@ -19,19 +20,21 @@ enum AuthManagerError: Error {
     var message: LocalizedStringResource {
         switch self {
         case .emailIsAlreadyInUse:
-                "Email is already in use"
+            "Email is already in use"
+        case .appleSignInError(let error):
+            "Apple sign in error: \(error.localizedDescription)"
         case .userNotFound:
-                "User not fount"
+            "User not fount"
         case .invalidEmail(let error):
-                "invalid email: \(error.localizedDescription)"
+            "invalid email: \(error.localizedDescription)"
         case .networkError(let error):
-                "network error: \(error.localizedDescription)"
+            "network error: \(error.localizedDescription)"
         case .unknown(let error):
-                "unknown error: \(error.localizedDescription)"
+            "unknown error: \(error.localizedDescription)"
         case .missGoogleIdToken:
-                "Missing google token"
+            "Missing google token"
         case .userCancelledSignIn:
-                "User cancelled sign in"
+            "User cancelled sign in"
         }
     }
 }
@@ -48,6 +51,10 @@ extension AuthManagerError: Equatable {
         case .userCancelledSignIn:
             if case .userCancelledSignIn = rhs { return true }
             
+        case .appleSignInError(let lErr):
+            if case .appleSignInError(let rErr) = rhs {
+                return lErr.localizedDescription == rErr.localizedDescription
+            }
         case .invalidEmail(let lErr):
             if case .invalidEmail(let rErr) = rhs {
                 return lErr.localizedDescription == rErr.localizedDescription

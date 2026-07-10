@@ -8,18 +8,18 @@
 import Foundation
 import Combine
 
-@MainActor
-protocol AuthServiceProtocol {
+protocol AuthServiceProtocol: Sendable {
     var signPublisher: AnyPublisher<Bool, Never> { get }
     
     func signUp(name: String, email: String, password: String) async throws(AuthServiceError)
     func signIn(email: String, password: String) async throws(AuthServiceError)
+    func signWithGoogle() async throws(AuthServiceError)
+    func signWithApple() async throws(AuthServiceError)
     func signOut() throws(AuthServiceError)
     func changePassword(email: String) async throws(AuthServiceError)
 }
 
-@MainActor
-final class AuthService: AuthServiceProtocol {
+final class AuthService: AuthServiceProtocol, @unchecked Sendable {
     
     private let authManager: AuthManagerProtocol
     private let userStorageManager: UserStorageManagerProtocol
@@ -42,6 +42,34 @@ final class AuthService: AuthServiceProtocol {
         } catch let error as UserStorageError {
             throw .saveProfileError(error)
         } catch let error {
+            throw .unknown(error)
+        }
+    }
+    
+    func signWithGoogle() async throws(AuthServiceError) {
+        do {
+            if let authModel = try await authManager.signWithGoogle() {
+                try await userStorageManager.createUserProfile(name: authModel.firstName, email: authModel.email, id: authModel.uid)
+            }
+        } catch let error as AuthManagerError {
+            throw .loginError(error)
+        } catch let error as UserStorageError {
+            throw .saveProfileError(error)
+        } catch {
+            throw .unknown(error)
+        }
+    }
+    
+    func signWithApple() async throws(AuthServiceError) {
+        do {
+            if let authModel = try await authManager.signInWithApple() {
+                try await userStorageManager.createUserProfile(name: authModel.firstName, email: authModel.email, id: authModel.uid)
+            }
+        } catch let error as AuthManagerError {
+            throw .loginError(error)
+        } catch let error as UserStorageError {
+            throw .saveProfileError(error)
+        } catch {
             throw .unknown(error)
         }
     }
