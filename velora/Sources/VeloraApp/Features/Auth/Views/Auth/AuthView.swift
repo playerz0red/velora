@@ -30,10 +30,6 @@ struct AuthView: View {
             authCard
         }
         .ignoresSafeArea(edges: .bottom)
-        .onAppear {
-            viewModel.resetPasswordModel.email = "ipasha1337@yandex.by"
-            viewModel.changePassword()
-        }
     }
     
     private var logoBlock: some View {
