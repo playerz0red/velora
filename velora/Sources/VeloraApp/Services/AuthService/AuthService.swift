@@ -8,8 +8,7 @@
 import Foundation
 import Combine
 
-@MainActor
-protocol AuthServiceProtocol {
+protocol AuthServiceProtocol: Sendable {
     var signPublisher: AnyPublisher<Bool, Never> { get }
     
     func signUp(name: String, email: String, password: String) async throws(AuthServiceError)
@@ -20,8 +19,7 @@ protocol AuthServiceProtocol {
     func changePassword(email: String) async throws(AuthServiceError)
 }
 
-@MainActor
-final class AuthService: AuthServiceProtocol {
+final class AuthService: AuthServiceProtocol, @unchecked Sendable {
     
     private let authManager: AuthManagerProtocol
     private let userStorageManager: UserStorageManagerProtocol
