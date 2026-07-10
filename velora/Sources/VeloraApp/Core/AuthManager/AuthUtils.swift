@@ -24,7 +24,8 @@ final class AppleSignInDelegate: NSObject, ASAuthorizationControllerDelegate {
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
               let appleIDToken = appleIDCredential.identityToken,
-              let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
+              let idTokenString = String(data: appleIDToken, encoding: .utf8)
+        else {
             completion(.failure(NSError(domain: "Auth", code: -1, userInfo: [NSLocalizedDescriptionKey: "Не удалось получить токен Apple"])))
             SetRetainer.release(self)
             return
@@ -35,7 +36,7 @@ final class AppleSignInDelegate: NSObject, ASAuthorizationControllerDelegate {
         Task {
             do {
                 let result = try await Auth.auth().signIn(with: credential)
-                completion(.success((result)))
+                completion(.success(result))
             } catch {
                 completion(.failure(error))
             }
