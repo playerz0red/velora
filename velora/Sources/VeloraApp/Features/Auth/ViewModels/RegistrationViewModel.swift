@@ -23,6 +23,26 @@ final class RegisterViewModel {
         self.authService = authService
         self.validationService = validationService
     }
+    
+    func loginWithGoogle() {
+        Task {
+            do {
+                try await authService.signWithGoogle()
+            } catch let error as AuthServiceError {
+                self.error = error
+            }
+        }
+    }
+    
+    func loginWithApple() {
+        Task {
+            do {
+                try await authService.signWithApple()
+            } catch let error as AuthServiceError {
+                self.error = error
+            }
+        }
+    }
 
     func register() {
 
@@ -45,10 +65,11 @@ final class RegisterViewModel {
         do {
             try await authService.signUp(
                 name: model.name,
+                lastName: model.lastName,
                 email: model.email,
                 password: model.password
             )
-        } catch let error as AuthServiceError {
+        } catch {
             self.error = error
         }
     }
