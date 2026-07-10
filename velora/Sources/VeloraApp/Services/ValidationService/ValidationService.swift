@@ -48,6 +48,26 @@ final class ValidationService: ValidationServiceProtocol {
         )
     }
     
+    func validateEmail(_ email: String) -> ValidationError.EmailError? {
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        
+        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+        
+        if email.isEmpty {
+            return .empty
+        }
+        
+        if email.count > MAX_FIELD_LENGTH {
+            return .tooLong
+        }
+        
+        if !emailPred.evaluate(with: email) {
+            return .invalidFormat
+        }
+        
+        return nil
+    }
+    
     func validateRegister(registerForm: RegisterModel) -> RegistrationValidationResult {
         RegistrationValidationResult(
             nameError: validateName(registerForm.name),
@@ -89,27 +109,6 @@ final class ValidationService: ValidationServiceProtocol {
         }
         
         return nil
-    }
-    
-    func validateEmail(_ email: String) -> ValidationError.EmailError? {
-        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        
-        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-        
-        if email.isEmpty {
-            return .empty
-        }
-        
-        if email.count > MAX_FIELD_LENGTH {
-            return .tooLong
-        }
-        
-        if !emailPred.evaluate(with: email) {
-            return .invalidFormat
-        }
-        
-        return nil
-        
     }
     
     private func validateName(_ name: String) -> ValidationError.NameError? {
