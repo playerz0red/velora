@@ -6,6 +6,10 @@ struct RegistrationView: View {
     @Environment(AppCoordinator.self)
     private var coordinator
     
+    init(viewModel: RegisterViewModel) {
+        self.viewModel = viewModel
+    }
+    
     var body: some View {
         ZStack {
             AuthBackground()

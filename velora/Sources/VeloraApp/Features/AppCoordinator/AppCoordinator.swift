@@ -31,9 +31,10 @@ extension AppCoordinator {
             )
             
         case .email:
-            EmailView(
-                viewModel: factory.makeAuthViewModel()
-            )
+//            EmailView(
+//                viewModel: factory.makeAuthViewModel()
+//            )
+            MainView()
             
         case .registration:
             RegistrationView(

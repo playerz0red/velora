@@ -6,6 +6,10 @@ struct EmailView: View {
     @Environment(AppCoordinator.self)
     private var coordinator
     
+    init(viewModel: AuthViewModel) {
+        self.viewModel = viewModel
+    }
+    
     var body: some View {
         ZStack {
             AuthBackground()
