@@ -6,7 +6,10 @@ struct AuthView: View {
     
     @Environment(AppCoordinator.self)
     private var coordinator
-    @State private var viewModel = AuthViewModel(authService: AuthService(authManager: FirebaseAuthManager(), userStorageManager: UserStorageManager()), validationService: ValidationService())
+    
+    init(viewModel: AuthViewModel) {
+        self.viewModel = viewModel
+    }
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -133,8 +136,3 @@ struct AuthView: View {
         .shadow(color: .pink.opacity(0.14), radius: 28, x: 0, y: -8)
     }
 }
-
-//#Preview {
-//    AuthView()
-//        .environment(AppCoordinator())
-//}

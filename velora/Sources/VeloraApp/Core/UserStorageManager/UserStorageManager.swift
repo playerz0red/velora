@@ -9,7 +9,7 @@ import Foundation
 import SkipFirebaseFirestore
 
 protocol UserStorageManagerProtocol {
-    func createUserProfile(name: String?, email: String?, id: String) async throws(UserStorageError)
+    func createUserProfile(name: String?, lastName: String?, email: String?, id: String) async throws(UserStorageError)
     func addUserAvatar(forUserId: String, avatarId: String) async throws(UserStorageError)
     func getUserAvatarPath(forUserId id: String) async throws(UserStorageError) -> String?
     func getUser(with id: String) async -> UserDTO?
@@ -23,11 +23,12 @@ final class UserStorageManager: UserStorageManagerProtocol {
         try? await database.collection(FirestoreCollections.users.rawValue).document(id).getDocument(as: UserDTO.self)
     }
     
-    func createUserProfile(name: String?, email: String?, id: String) async throws(UserStorageError) {
+    func createUserProfile(name: String?, lastName: String?, email: String?, id: String) async throws(UserStorageError) {
         let data: [String: Any] = [
             FirestoreFields.UserFields.id.rawValue: id,
             FirestoreFields.UserFields.name.rawValue: name,
             FirestoreFields.UserFields.email.rawValue: email,
+            FirestoreFields.UserFields.lastName.rawValue: lastName,
             FirestoreFields.UserFields.createdAt.rawValue: FieldValue.serverTimestamp()
         ]
         do {

@@ -20,5 +20,6 @@ enum FirestoreFields {
         case email = "email"
         case createdAt = "createdAt"
         case avatarId = "avatarId"
+        case lastName = "lastName"
     }
 }

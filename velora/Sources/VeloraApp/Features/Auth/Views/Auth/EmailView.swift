@@ -6,6 +6,10 @@ struct EmailView: View {
     @Environment(AppCoordinator.self)
     private var coordinator
     
+    init(viewModel: AuthViewModel) {
+        self.viewModel = viewModel
+    }
+    
     var body: some View {
         ZStack {
             AuthBackground()
@@ -53,9 +57,7 @@ struct EmailView: View {
             AuthButton(
                 title: "Войти",
                 icon: nil,
-                action: {
-                    viewModel.loginByCredendtials()
-                }
+                action: viewModel.loginByCredendtials
             )
             
             AuthDivider(
@@ -64,15 +66,13 @@ struct EmailView: View {
             AuthButton(
                 title: "Продолжить с Google",
                 icon: "globe.americas.fill",
-                action: {
-                }
+                action: viewModel.loginWithGoogle
             )
             
             AuthButton(
                 title: "Продолжить с Apple",
                 icon: "apple.logo",
-                action: {
-                }
+                action: viewModel.loginWithApple
             )
             
             AuthFooter(
@@ -84,8 +84,3 @@ struct EmailView: View {
         }
     }
 }
-
-
-//#Preview {
-//    EmailView()
-//}

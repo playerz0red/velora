@@ -6,6 +6,10 @@ struct RegistrationView: View {
     @Environment(AppCoordinator.self)
     private var coordinator
     
+    init(viewModel: RegisterViewModel) {
+        self.viewModel = viewModel
+    }
+    
     var body: some View {
         ZStack {
             AuthBackground()
@@ -75,8 +79,7 @@ struct RegistrationView: View {
             AuthButton(
                 title: "Зарегистрироваться",
                 icon: nil,
-                action: {viewModel.register()
-                }
+                action: viewModel.register
             )
             
             AuthDivider(
@@ -85,15 +88,13 @@ struct RegistrationView: View {
             AuthButton(
                 title: "Продолжить с Google",
                 icon: "globe.americas.fill",
-                action: {
-                }
+                action: viewModel.loginWithGoogle
             )
             
             AuthButton(
                 title: "Продолжить с Apple",
                 icon: "apple.logo",
-                action: {
-                }
+                action: viewModel.loginWithApple
             )
             
             AuthFooter(
@@ -105,7 +106,3 @@ struct RegistrationView: View {
         }
     }
 }
-
-//#Preview {
-//    RegistrationView()
-//}

@@ -141,7 +141,7 @@ final class FirebaseAuthManager: AuthManagerProtocol, UserSessionProtocol, @unch
             let result = try await Auth.auth().signIn(with: credential)
             
             if result.additionalUserInfo?.isNewUser == true {
-                return AuthUserModel(uid: result.user.uid, firstName: result.user.displayName, email: result.user.email)
+                return AuthUserModel(uid: result.user.uid, firstName: result.user.displayName, email: result.user.email, lastName: nil)
             } else {
                 return nil
             }
@@ -166,7 +166,8 @@ final class FirebaseAuthManager: AuthManagerProtocol, UserSessionProtocol, @unch
                             continuation.resume(returning: AuthUserModel(
                                 uid: authResult.user.uid,
                                 firstName: authResult.user.displayName,
-                                email: authResult.user.email)
+                                email: authResult.user.email,
+                                lastName: nil)
                             )
                         } else {
                             continuation.resume(returning: nil)
@@ -198,7 +199,12 @@ final class FirebaseAuthManager: AuthManagerProtocol, UserSessionProtocol, @unch
             try await changeRequest.commitChanges()
             
             if authResult.additionalUserInfo?.isNewUser == true {
-                return AuthUserModel(uid: authResult.user.uid, firstName: authResult.user.displayName, email: authResult.user.email)
+                return AuthUserModel(
+                    uid: authResult.user.uid,
+                    firstName: authResult.user.displayName,
+                    email: authResult.user.email,
+                    lastName: nil
+                )
             } else {
                 return nil
             }
