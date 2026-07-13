@@ -11,7 +11,7 @@ import Combine
 protocol AuthServiceProtocol: Sendable {
     var signPublisher: AnyPublisher<Bool, Never> { get }
     
-    func signUp(name: String, email: String, password: String) async throws(AuthServiceError)
+    func signUp(name: String, lastName: String, email: String, password: String) async throws(AuthServiceError)
     func signIn(email: String, password: String) async throws(AuthServiceError)
     func signWithGoogle() async throws(AuthServiceError)
     func signWithApple() async throws(AuthServiceError)
@@ -33,10 +33,10 @@ final class AuthService: AuthServiceProtocol, @unchecked Sendable {
         authManager.isSignedPublisher
     }
     
-    func signUp(name: String, email: String, password: String) async throws(AuthServiceError) {
+    func signUp(name: String, lastName: String, email: String, password: String) async throws(AuthServiceError) {
         do {
             let uid = try await authManager.signUp(username: name, email: email, password: password)
-            try await userStorageManager.createUserProfile(name: name, email: email, id: uid)
+            try await userStorageManager.createUserProfile(name: name, lastName: lastName, email: email, id: uid)
         } catch let error as AuthManagerError {
             throw .registerError(error)
         } catch let error as UserStorageError {
@@ -49,7 +49,7 @@ final class AuthService: AuthServiceProtocol, @unchecked Sendable {
     func signWithGoogle() async throws(AuthServiceError) {
         do {
             if let authModel = try await authManager.signWithGoogle() {
-                try await userStorageManager.createUserProfile(name: authModel.firstName, email: authModel.email, id: authModel.uid)
+                try await userStorageManager.createUserProfile(name: authModel.firstName, lastName: authModel.lastName, email: authModel.email, id: authModel.uid)
             }
         } catch let error as AuthManagerError {
             throw .loginError(error)
@@ -63,7 +63,7 @@ final class AuthService: AuthServiceProtocol, @unchecked Sendable {
     func signWithApple() async throws(AuthServiceError) {
         do {
             if let authModel = try await authManager.signInWithApple() {
-                try await userStorageManager.createUserProfile(name: authModel.firstName, email: authModel.email, id: authModel.uid)
+                try await userStorageManager.createUserProfile(name: authModel.firstName, lastName: authModel.lastName, email: authModel.email, id: authModel.uid)
             }
         } catch let error as AuthManagerError {
             throw .loginError(error)

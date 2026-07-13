@@ -11,4 +11,5 @@ struct AuthUserModel {
     let uid: String
     let firstName: String?
     let email: String?
+    let lastName: String?
 }

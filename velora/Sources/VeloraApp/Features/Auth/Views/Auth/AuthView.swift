@@ -136,8 +136,3 @@ struct AuthView: View {
         .shadow(color: .pink.opacity(0.14), radius: 28, x: 0, y: -8)
     }
 }
-
-//#Preview {
-//    AuthView()
-//        .environment(AppCoordinator())
-//}

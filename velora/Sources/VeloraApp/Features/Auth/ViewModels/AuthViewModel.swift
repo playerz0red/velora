@@ -14,6 +14,8 @@ final class AuthViewModel {
     var model: AuthModel = .init()
     var validationResult: LoginValidationResult?
     var error: AuthServiceError?
+    var resetPasswordModel: ResetPasswordModel = .init()
+    var resetPasswordError: AuthServiceError?
     
     private let authService: AuthServiceProtocol
     private let validationService: ValidationServiceProtocol
@@ -21,6 +23,19 @@ final class AuthViewModel {
     init(authService: AuthServiceProtocol, validationService: ValidationServiceProtocol) {
         self.authService = authService
         self.validationService = validationService
+    }
+    
+    func changePassword() {
+        resetPasswordModel.validationError = validationService.validateEmail(resetPasswordModel.email)
+        guard resetPasswordModel.validationError == nil else { return }
+        
+        Task {
+            do {
+                try await authService.changePassword(email: resetPasswordModel.email)
+            } catch let error as AuthServiceError {
+                self.resetPasswordError = error
+            }
+        }
     }
     
     func loginWithGoogle() {
