@@ -129,7 +129,7 @@ private extension UserFormView {
     var interestsListView: some View {
         sectionView(sectionTitle: "Интересы") {
             CustomHStack(horizontalLimit: 300, spacing: 10) {
-                ForEach(FormModel.Interest.allCases, id: \.rawValue) { interest in
+                ForEach(Interest.allCases, id: \.rawValue) { interest in
                     let isSelected = viewModel.formModel.interests.contains(interest)
                     
                     interestView(interest: interest, isSelected: isSelected)
@@ -148,7 +148,7 @@ private extension UserFormView {
         .animation(Animation.bouncy, value: viewModel.formModel.interests)
     }
     
-    func interestView(interest: FormModel.Interest, isSelected: Bool) -> some View {
+    func interestView(interest: Interest, isSelected: Bool) -> some View {
         Text(interest.title)
             .font(.system(size: 17, weight: .semibold))
             .foregroundStyle(isSelected ? Color.lightPink : Color.darkGray)
@@ -243,7 +243,7 @@ private extension UserFormView {
     
     var genderPicker: some View {
         HStack(spacing: 8) {
-            ForEach(FormModel.Gender.allCases, id: \.rawValue) { gender in
+            ForEach(Gender.allCases, id: \.rawValue) { gender in
                 genderButton(gender: gender, isSelected: gender == viewModel.formModel.gender)
                     .onTapGesture {
                         viewModel.formModel.gender = gender
@@ -256,7 +256,7 @@ private extension UserFormView {
         .animation(.bouncy, value: viewModel.formModel.gender)
     }
     
-    func genderButton(gender: FormModel.Gender, isSelected: Bool) -> some View {
+    func genderButton(gender: Gender, isSelected: Bool) -> some View {
         Text(gender.title)
             .font(.system(size: 20, weight: .semibold))
             .foregroundStyle(isSelected ? Color.white : Color.darkGray)

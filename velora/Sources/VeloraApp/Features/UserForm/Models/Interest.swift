@@ -49,3 +49,4 @@ enum Interest: String, Decodable, CaseIterable {
             LocalizedStringResource("Садоводство")
         }
     }
+}

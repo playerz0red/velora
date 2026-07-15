@@ -11,7 +11,7 @@ import SkipFirebaseFirestore
 protocol UserStorageManagerProtocol: Sendable {
     func createUserProfile(name: String?, lastName: String?, email: String?, id: String) async throws(UserStorageError)
     func addUserAvatar(forUserId: String, avatarId: String) async throws(UserStorageError)
-    func getUserAvatarPath(forUserId id: String) async throws(UserStorageError) -> String?
+    func getUserAvatarPath(forUserId id: String) async throws(UserStorageError) -> [String]?
     func getUser(with id: String) async -> UserDTO?
     func updateUserForm(userFormDto: UserFormDTO, userId: String) async throws
 }

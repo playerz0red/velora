@@ -9,13 +9,13 @@ import Foundation
 
 @MainActor
 final class AppDependencyContainer {
-    lazy var authManager: AuthManagerProtocol = FirebaseAuthManager()
-    lazy var userSessionManager: UserSessionProtocol = FirebaseAuthManager()
-    lazy var codingManager: CodingManagerProtocol = CodingManager()
-    lazy var locationManager: LocationManagerProtocol = LocationManager()
-    lazy var networkManager: NetworkManagerProtocol = NetworkManager()
-    lazy var userStorageManager: UserStorageManagerProtocol = UserStorageManager()
-    lazy var validationService: ValidationServiceProtocol = ValidationService()
+    private lazy var authManager: AuthManagerProtocol = FirebaseAuthManager()
+    private lazy var userSessionManager: UserSessionProtocol = FirebaseAuthManager()
+    private lazy var codingManager: CodingManagerProtocol = CodingManager()
+    private lazy var locationManager: LocationManagerProtocol = LocationManager()
+    private lazy var networkManager: NetworkManagerProtocol = NetworkManager()
+    private lazy var userStorageManager: UserStorageManagerProtocol = UserStorageManager()
+    private lazy var validationService: ValidationServiceProtocol = ValidationService()
 }
 
 extension AppDependencyContainer {
