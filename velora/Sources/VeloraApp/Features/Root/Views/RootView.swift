@@ -5,149 +5,33 @@ enum ContentTab: String, Hashable {
 }
 
 struct RootView: View {
-    @State private var coordinator = AppCoordinator()
-    private let factory = AppFactory()
-
-    var body: some View {
-        NavigationStack(path: $coordinator.path) {
-            AuthView(viewModel: factory.makeAuthViewModel())
-                .navigationDestination(for: AppRoute.self) { route in
-                    coordinator.destination(for: route)
-                }
-        }
-        .environment(coordinator)
+   
+    @State private var viewModel: RootViewModel
+    
+    private var appDependencyContainer: AppDependencyContainer
+    private let factory: RootFactoryProtocol
+    private let userFormFactory: UserFormFactoryProtocol
+    private let authFactory: AuthFactoryProtocol
+    
+    init(appDependencyContainer: AppDependencyContainer) {
+        self.appDependencyContainer = appDependencyContainer
+        self.factory = appDependencyContainer.makeRootFactory()
+        self.userFormFactory = appDependencyContainer.makeUserFormFactory()
+        self.authFactory = appDependencyContainer.makeAuthFactory()
+        self.viewModel = factory.buildRootViewModel()
     }
-}
-
-struct WelcomeView : View {
-    @State var heartBeating = false
-    @Binding var welcomeName: String
-
+    
     var body: some View {
-        VStack(spacing: 0) {
-            Text("Hello [\(welcomeName)](https://skip.dev)!")
-                .padding()
-            Image(systemName: "heart.fill")
-                .foregroundStyle(.red)
-                .scaleEffect(heartBeating ? 1.5 : 1.0)
-                .task {
-                    withAnimation(.easeInOut(duration: 1).repeatForever()) {
-                        heartBeating = true
+        ZStack {
+            if viewModel.isSigned {
+                UserFormView(viewModel: userFormFactory.buildUserFormViewModel())
+            } else {
+                AuthFlowView(authFactory: authFactory)
+                    .onAppear {
+                        viewModel.signOut()
                     }
-                }
-        }
-        .font(.largeTitle)
-    }
-}
-
-struct ItemListView : View {
-    @Environment(RootViewModel.self) var viewModel: RootViewModel
-
-    var body: some View {
-        List {
-            ForEach(viewModel.items) { item in
-                NavigationLink(value: item) {
-                    Label {
-                        Text(item.itemTitle)
-                    } icon: {
-                        if item.favorite {
-                            Image(systemName: "star.fill")
-                                .foregroundStyle(.yellow)
-                        }
-                    }
-                }
-            }
-            .onDelete { offsets in
-                viewModel.items.remove(atOffsets: offsets)
-            }
-            .onMove { fromOffsets, toOffset in
-                viewModel.items.move(fromOffsets: fromOffsets, toOffset: toOffset)
             }
         }
-        .navigationDestination(for: Item.self) { item in
-            ItemView(item: item)
-                .navigationTitle(item.itemTitle)
-        }
-        .toolbar {
-            ToolbarItemGroup {
-                Button {
-                    withAnimation {
-                        viewModel.items.insert(Item(), at: 0)
-                    }
-                } label: {
-                    Label("Add", systemImage: "plus")
-                }
-            }
-        }
-    }
-}
-
-struct ItemView : View {
-    @State var item: Item
-    @Environment(RootViewModel.self) var viewModel: RootViewModel
-    @Environment(\.dismiss) var dismiss
-
-    var body: some View {
-        Form {
-            TextField("Title", text: $item.title)
-                .textFieldStyle(.roundedBorder)
-            Toggle("Favorite", isOn: $item.favorite)
-            DatePicker("Date", selection: $item.date)
-            Text("Notes").font(.title3)
-            TextEditor(text: $item.notes)
-                .border(Color.secondary, width: 1.0)
-        }
-        .navigationBarBackButtonHidden()
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel") {
-                    dismiss()
-                }
-            }
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Save") {
-                    viewModel.save(item: item)
-                    dismiss()
-                }
-                .disabled(!viewModel.isUpdated(item))
-            }
-        }
-    }
-}
-
-struct SettingsView : View {
-    @Binding var appearance: String
-    @Binding var welcomeName: String
-
-    var body: some View {
-        Form {
-            TextField("Name", text: $welcomeName)
-            Picker("Appearance", selection: $appearance) {
-                Text("System").tag("")
-                Text("Light").tag("light")
-                Text("Dark").tag("dark")
-            }
-            if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String,
-               let buildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String {
-                Text("Version \(version) (\(buildNumber))")
-            }
-            HStack {
-                PlatformHeartView()
-                Text("Powered by [Skip](https://skip.dev)")
-            }
-        }
-    }
-}
-
-/// A view that shows a blue heart on iOS and a green heart on Android.
-struct PlatformHeartView : View {
-    var body: some View {
-       #if SKIP
-       ComposeView { ctx in // Mix in Compose code!
-           androidx.compose.material3.Text("💚", modifier: ctx.modifier)
-       }
-       #else
-       Text(verbatim: "💙")
-       #endif
+        .animation(.bouncy, value: viewModel.isSigned)
     }
 }

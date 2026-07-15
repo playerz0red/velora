@@ -6,10 +6,12 @@
 //
 
 import Foundation
+#if canImport(UIKit)
 import UIKit
+#endif
 
+#if !skip
 struct Utils {
-    
     @MainActor
     static func getTopViewController(controller: UIViewController? = nil) -> UIViewController? {
         let controller = controller ?? UIApplication.shared.keyWindow?.rootViewController
@@ -24,3 +26,4 @@ struct Utils {
         return controller
     }
 }
+#endif
