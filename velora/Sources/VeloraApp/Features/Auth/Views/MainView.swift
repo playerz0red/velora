@@ -1,14 +1,32 @@
 import SwiftUI
 
 struct MainView: View {
-    
-    private let profile = MockProfile(
-        name: "Анна",
-        age: 25,
-        profession: "Маркетолог",
-        location: "Москва · 3 км",
-        image: "girl"
-    )
+
+    private static let initialProfiles: [MockProfile] = [
+        MockProfile(
+            name: "Анна",
+            age: 25,
+            profession: "Маркетолог",
+            location: "Москва · 3 км",
+            image: "girl3"
+        ),
+        MockProfile(
+            name: "Катя",
+            age: 23,
+            profession: "Дизайнер",
+            location: "Минск · 5 км",
+            image: "girl2"
+        ),
+        MockProfile(
+            name: "Мария",
+            age: 27,
+            profession: "HR",
+            location: "Варшава · 2 км",
+            image: "girl"
+        )
+    ]
+
+    @State private var profiles = Self.initialProfiles
 
     var body: some View {
         ZStack {
@@ -18,7 +36,8 @@ struct MainView: View {
 
                 headerBlock
 
-                ProfileCardView(profile: profile)
+                CardStackView(profiles: $profiles)
+                    .frame(width: 340, height: 560)
 
                 buttonBlock
 
@@ -26,6 +45,11 @@ struct MainView: View {
             }
             .padding(.horizontal, 20)
             .padding(.top, 16)
+        }
+        .onChange(of: profiles) { _, newValue in
+            if newValue.isEmpty {
+                profiles = Self.initialProfiles
+            }
         }
     }
 
@@ -87,7 +111,3 @@ struct MainView: View {
         }
     }
 }
-
-//#Preview {
-//    MainView()
-//}
