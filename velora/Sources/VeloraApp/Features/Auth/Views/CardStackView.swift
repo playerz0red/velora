@@ -2,9 +2,13 @@ import SwiftUI
 
 struct CardStackView: View {
 
-    @Binding var profiles: [MockProfile]
+    @Binding private var profiles: [MockProfile]
 
     @State private var offset: CGSize = .zero
+   
+    init(profiles: Binding<[MockProfile]>) {
+        self._profiles = profiles
+    }
 
     var body: some View {
         ZStack {
