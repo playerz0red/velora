@@ -11,12 +11,13 @@ struct UserDTO: Decodable {
     let id: String
     let name: String
     let email: String
-    let avatarPath: String?
-    
-    enum CodingKeys: String, CodingKey {
-        case id
-        case name
-        case email
-        case avatarPath = "avatarId"
-    }
+    let images: [String]?
+    let birthday: Date?
+    let location: String?
+    let description: String?
+    let gender: Gender?
+    let interests: [Interest]?
+    let education: String?
+    let latitude: Double?
+    let longitude: Double?
 }
