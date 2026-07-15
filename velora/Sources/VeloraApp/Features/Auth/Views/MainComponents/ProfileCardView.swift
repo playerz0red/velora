@@ -2,7 +2,13 @@ import SwiftUI
 
 struct ProfileCardView: View {
 
-    let profile: MockProfile
+    private let profile: MockProfile
+    
+    init(
+        profile: MockProfile
+    ) {
+        self.profile = profile
+    }
 
     var body: some View {
         Image(profile.image, bundle: .module)
@@ -11,8 +17,6 @@ struct ProfileCardView: View {
             .frame(width: 340, height: 560)
             .clipped()
             .clipShape(RoundedRectangle(cornerRadius: 32))
-
-
             .overlay {
                 LinearGradient(
                     colors: [

@@ -35,6 +35,56 @@ struct CardStackView: View {
     }
 }
 
+private enum OverlayPosition {
+    case leading
+    case trailing
+
+    var text: String {
+        switch self {
+        case .leading:
+            return "LIKE"
+        case .trailing:
+            return "NOPE"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .leading:
+            return .green
+        case .trailing:
+            return .red
+        }
+    }
+
+    var rotation: Double {
+        switch self {
+        case .leading:
+            return -15
+        case .trailing:
+            return 15
+        }
+    }
+
+    var alignment: Alignment {
+        switch self {
+        case .leading:
+            return .topLeading
+        case .trailing:
+            return .topTrailing
+        }
+    }
+
+    var edge: Edge.Set {
+        switch self {
+        case .leading:
+            return .leading
+        case .trailing:
+            return .trailing
+        }
+    }
+}
+
 private extension CardStackView {
 
     var dragGesture: some Gesture {
@@ -92,46 +142,37 @@ private extension CardStackView {
                 }
             }
     }
-
+    
     @ViewBuilder
     var overlayView: some View {
 
         if offset.width > 30 {
-
-            Text("LIKE")
-                .font(Font.system(size: 40, weight: .bold))
-                .foregroundStyle(.green)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 10)
-                .overlay {
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(.green, lineWidth: 4)
-                }
-                .rotationEffect(.degrees(-15))
-                .padding(.top, 50)
-                .padding(.leading, 20)
-                .opacity(min(offset.width / 120.0, 1))
-
+            overlayView(position: .leading)
         } else if offset.width < -30 {
-
-            HStack {
-
-                Spacer()
-
-                Text("NOPE")
-                    .font(Font.system(size: 40, weight: .bold))
-                    .foregroundStyle(.red)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(.red, lineWidth: 4)
-                    }
-                    .rotationEffect(.degrees(15))
-                    .padding(.top, 50)
-                    .padding(.trailing, 20)
-                    .opacity(min(-offset.width / 120.0, 1))
-            }
+            overlayView(position: .trailing)
         }
+    }
+
+    func overlayView(position: OverlayPosition) -> some View {
+
+        Text(position.text)
+            .font(.system(size: 28, weight: .bold))
+            .foregroundStyle(position.color)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
+            .overlay {
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(position.color, lineWidth: 4)
+            }
+            .rotationEffect(.degrees(position.rotation))
+            .padding(.top, 50)
+            .padding(position.edge, 20)
+            .frame(maxWidth: .infinity, alignment: position.alignment)
+            .opacity(
+                min(
+                    abs(offset.width) / 120.0,
+                    1
+                )
+            )
     }
 }

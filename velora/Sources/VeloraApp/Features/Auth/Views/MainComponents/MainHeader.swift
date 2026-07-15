@@ -2,9 +2,17 @@ import SwiftUI
 
 struct HeaderButton: View {
 
-    let icon: String
-    let action: () -> Void
+    private let icon: String
+    private let action: () -> Void
 
+    init(
+        icon: String,
+        action: @escaping () -> Void
+    ) {
+        self.icon = icon
+        self.action = action
+    }
+    
     var body: some View {
         Button(action: action) {
             Image(systemName: icon)
