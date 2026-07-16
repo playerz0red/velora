@@ -14,11 +14,14 @@ final class UserFormViewModel {
     var formModel: FormModel = .init()
     var isShowingPhotoPicker: Bool = false
     var ageError: Bool = false
+    var serviceError: UserFormServiceError?
+    let onSubmit: () -> Void
     
     private let formUploader: UserFormServiceProtocol
     
-    init(formUploader: UserFormServiceProtocol) {
+    init(formUploader: UserFormServiceProtocol, onSubmit: @escaping () -> Void) {
         self.formUploader = formUploader
+        self.onSubmit = onSubmit
     }
     
     func uploadForm() {
@@ -32,8 +35,9 @@ final class UserFormViewModel {
         Task {
             do {
                 try await self.formUploader.updateUserForm(formModel: formModel)
-            } catch {
-                
+                self.onSubmit()
+            } catch let error as UserFormServiceError {
+                self.serviceError = error
             }
         }
     }

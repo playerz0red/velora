@@ -9,5 +9,8 @@ import Foundation
 
 enum RootRoutes: Hashable {
     case auth
+    case form
     case main
 }
+
+

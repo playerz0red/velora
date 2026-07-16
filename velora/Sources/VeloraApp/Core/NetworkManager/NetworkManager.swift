@@ -65,17 +65,15 @@ final class NetworkManager: NetworkManagerProtocol {
     }
     
     func uploadData(endpoint: EndpointProtocol, data: Data, uploadPreset: String) async throws(NetworkManagerError) -> Data {
-        guard let url = endpoint.url else { return .init() }
+        guard let url = endpoint.url else { throw .urlError }
         
         let boundary = "Boundary-\(UUID().uuidString)"
         var body = Data()
         
-        // Добавляем upload_preset
         body.append("--\(boundary)\r\n".data(using: .utf8)!)
         body.append("Content-Disposition: form-data; name=\"upload_preset\"\r\n\r\n".data(using: .utf8)!)
         body.append("\(uploadPreset)\r\n".data(using: .utf8)!)
         
-        // Добавляем файл (КАК БИНАРНЫЕ ДАННЫЕ, а не base64!)
         let mimeType = data.mimeType.isEmpty ? "image/jpeg" : data.mimeType
         let filename = "image.\(mimeType.components(separatedBy: "/").last ?? "jpg")"
         
@@ -85,7 +83,6 @@ final class NetworkManager: NetworkManagerProtocol {
         body.append(data) // <-- отправляем бинарные данные, НЕ base64!
         body.append("\r\n".data(using: .utf8)!)
         
-        // Закрываем boundary
         body.append("--\(boundary)--\r\n".data(using: .utf8)!)
         
         var request = URLRequest(url: url)
@@ -101,9 +98,6 @@ final class NetworkManager: NetworkManagerProtocol {
             }
             
             guard httpResponse.statusCode == 200 else {
-                if let serverErrorResponse = String(data: data, encoding: .utf8) {
-                    print("❌ Cloudinary Error [\(httpResponse.statusCode)]: \(serverErrorResponse)")
-                }
                 throw NetworkManagerError.serverError(code: httpResponse.statusCode)
             }
             

@@ -8,7 +8,7 @@
 import Foundation
 
 protocol CloudStorageServiceProtocol: Sendable {
-    func uploadData(data: Data) async throws -> String
+    func uploadData(data: Data) async throws(CloudStorageServiceError) -> String
 }
 
 final class CloudStorageService: CloudStorageServiceProtocol {
@@ -24,12 +24,21 @@ final class CloudStorageService: CloudStorageServiceProtocol {
         self.coder = coder
     }
     
-    func uploadData(data: Data) async throws -> String {
+    func uploadData(data: Data) async throws(CloudStorageServiceError) -> String {
         let endpoint = CloudStorageEndpoints.cloudinary(cloudName: cloudName)
-        let data = try await networkManager.uploadData(endpoint: endpoint, data: data, uploadPreset: uploadPreset)
-        guard let response: CloudStorageUploadResponse = coder.decode(from: data) else {
-            return ""
+        do {
+            let data = try await networkManager.uploadData(endpoint: endpoint, data: data, uploadPreset: uploadPreset)
+            
+            guard let response: CloudStorageUploadResponse = coder.decode(from: data) else {
+                throw CloudStorageServiceError.providerError
+            }
+            return response.secureUrl
+        } catch let error as NetworkManagerError {
+            throw .networkError(error)
+        } catch let error as CloudStorageServiceError {
+            throw error
+        } catch {
+            throw .unknown(error)
         }
-        return response.secureUrl
     }
 }

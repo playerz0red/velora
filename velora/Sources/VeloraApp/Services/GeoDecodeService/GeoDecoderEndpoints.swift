@@ -43,6 +43,4 @@ enum GeoDecoderEndpoints: EndpointProtocol {
         components?.queryItems = queryItems
         return components?.url
     }
-    
-    
 }

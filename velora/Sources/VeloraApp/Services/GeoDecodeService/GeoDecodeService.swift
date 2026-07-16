@@ -8,7 +8,7 @@
 import Foundation
 
 protocol GeoDecodeServiceProtocol: Sendable {
-    func decode(from location: LocationModel, language: String) async throws -> String?
+    func decode(from location: LocationModel, language: String) async throws(GeoDecodeServiceError) -> String?
 }
 
 final class GeoDecodeService: GeoDecodeServiceProtocol {
@@ -21,13 +21,17 @@ final class GeoDecodeService: GeoDecodeServiceProtocol {
         self.coder = coder
     }
     
-    func decode(from location: LocationModel, language: String) async throws -> String? {
+    func decode(from location: LocationModel, language: String) async throws(GeoDecodeServiceError) -> String? {
         let endpoint = GeoDecoderEndpoints.openStreetMap(location: location, language: language)
         
-        let data = try await networkManager.sendRequest(endpoint: endpoint, body: nil)
-        let response: GeoDecoderResponse? = coder.decode(from: data)
-        
-        return response?.address.cityName
+        do {
+            let data = try await networkManager.sendRequest(endpoint: endpoint, body: nil)
+            let response: GeoDecoderResponse? = coder.decode(from: data)
+            
+            return response?.address.cityName
+        } catch {
+            throw .decodeError(error)
+        }
     }
 }
 

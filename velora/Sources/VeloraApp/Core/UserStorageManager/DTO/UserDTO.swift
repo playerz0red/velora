@@ -12,10 +12,10 @@ struct UserDTO: Decodable {
     let name: String
     let email: String
     let images: [String]?
-    let birthday: Date?
+    let birthday: Date
     let location: String?
     let description: String?
-    let gender: Gender?
+    let gender: Gender
     let interests: [Interest]?
     let education: String?
     let latitude: Double?

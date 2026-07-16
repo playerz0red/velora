@@ -8,8 +8,7 @@
 import Foundation
 
 protocol UserFormServiceProtocol: Sendable {
-    func updateUserForm(formModel: FormModel) async throws
-    func fetchUserForm() async throws
+    func updateUserForm(formModel: FormModel) async throws(UserFormServiceError)
 }
 
 final class UserFormService: UserFormServiceProtocol {
@@ -28,39 +27,45 @@ final class UserFormService: UserFormServiceProtocol {
         self.cloudStorageService = dependency.cloudStorageService
     }
     
-    func updateUserForm(formModel: FormModel) async throws {
+    func updateUserForm(formModel: FormModel) async throws(UserFormServiceError) {
         guard let userId = userSessionManager.userId else { return }
-        let imageUrls: [String] = try await uploadImages(images: formModel.images)
-        let location = try await locationManager.fetchLocation()
-        let decodedLocation = try await geoDecoder.decode(from: location, language: "ru")
-        
-        let formDto: UserFormDTO = .init(
-            from: formModel,
-            locationDecoded: decodedLocation,
-            images: imageUrls,
-            location: location
-        )
-        
-        try await userStorageManager.updateUserForm(userFormDto: formDto, userId: userId)
-    }
-    
-    func fetchUserForm() async throws {
-        
-    }
-    
-    private func uploadImages(images: [IdentifiableData]) async throws -> [String] {
-        try await withThrowingTaskGroup(of: String.self) { group in
+        do {
+            let imageUrls: [String] = await uploadImages(images: formModel.images)
+            let location = try await locationManager.fetchLocation()
+            let decodedLocation = try await geoDecoder.decode(from: location, language: "ru")
             
+            let formDto: UserFormDTO = .init(
+                from: formModel,
+                locationDecoded: decodedLocation,
+                images: imageUrls,
+                location: location
+            )
+            
+            try await userStorageManager.updateUserForm(userFormDto: formDto, userId: userId)
+        } catch let error as DomainError {
+            if let userStorageError = error as? UserStorageError {
+                throw .uploadFormError(userStorageError)
+            }
+            throw .fetchInfoError(error)
+        } catch {
+            throw .unknown(error)
+        }
+    }
+    
+    private func uploadImages(images: [IdentifiableData]) async -> [String] {
+        await withTaskGroup(of: String?.self) { group in
             images.forEach { imageData in
                 group.addTask {
-                    return try await self.cloudStorageService.uploadData(data: imageData.data)
+                    return try? await self.cloudStorageService.uploadData(data: imageData.data)
                 }
             }
             
             var urls: [String] = []
             
-            for try await url in group {
-                urls.append(url)
+            for await url in group {
+                if let url {
+                    urls.append(url)
+                }
             }
             
             return urls

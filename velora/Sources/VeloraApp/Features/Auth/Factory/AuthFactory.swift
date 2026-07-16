@@ -18,20 +18,30 @@ final class AuthFactory: AuthFactoryProtocol {
     private let authManager: AuthManagerProtocol
     private let userStorageManager: UserStorageManagerProtocol
     private let validationService: ValidationServiceProtocol
+    private let userSessionManager: UserSessionProtocol
     
     init(dependency: Dependency) {
         self.authManager = dependency.authManager
         self.userStorageManager = dependency.userStorageManager
         self.validationService = dependency.validationService
+        self.userSessionManager = dependency.userSessionManager
     }
     
     func buildAuthViewModel() -> AuthViewModel {
-        let authService = AuthService(authManager: authManager, userStorageManager: userStorageManager)
+        let authService = AuthService(dependency: .init(
+            authManager: authManager,
+            userSessionManager: userSessionManager,
+            userStorageManager: userStorageManager
+        ))
         return AuthViewModel(authService: authService, validationService: validationService)
     }
     
     func buildRegistrationViewModel() -> RegisterViewModel {
-        let authService = AuthService(authManager: authManager, userStorageManager: userStorageManager)
+        let authService = AuthService(dependency: .init(
+            authManager: authManager,
+            userSessionManager: userSessionManager,
+            userStorageManager: userStorageManager
+        ))
         return RegisterViewModel(authService: authService, validationService: validationService)
     }
 }
@@ -41,5 +51,6 @@ extension AuthFactory {
         let authManager: AuthManagerProtocol
         let userStorageManager: UserStorageManagerProtocol
         let validationService: ValidationServiceProtocol
+        let userSessionManager: UserSessionProtocol
     }
 }

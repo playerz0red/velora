@@ -12,7 +12,6 @@
 		496BDBEE2B8A7E9C00C09264 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 496BDBED2B8A7E9C00C09264 /* Localizable.xcstrings */; };
 		499CD43B2AC5B799001AE8D8 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F90C2B2A52156200F06D93 /* Main.swift */; };
 		499CD4402AC5B799001AE8D8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 49F90C2F2A52156300F06D93 /* Assets.xcassets */; };
-		6AFD69B52FF68FFC0053C63E /* VeloraApp.app in Sources */ = {isa = PBXBuildFile; fileRef = 496BDBEB2B89A47800C09264 /* VeloraApp.app */; };
 		FC87D1602FFFB0AF004FE9A9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FC87D15F2FFFB0AE004FE9A9 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
@@ -199,7 +198,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6AFD69B52FF68FFC0053C63E /* VeloraApp.app in Sources */,
 				499CD43B2AC5B799001AE8D8 /* Main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

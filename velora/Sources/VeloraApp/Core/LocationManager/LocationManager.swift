@@ -30,12 +30,10 @@ final class LocationManager: LocationManagerProtocol {
     
     private func checkPermissions() async throws(LocationManagerError) {
         guard await PermissionManager.requestLocationPermission(precise: true, always: false).isAuthorized == true else {
-            print("Пользователь отклонил доступ к геопозиции")
             throw .permissionDenied
         }
    
         guard provider.isAvailable else {
-            print("Службы геолокации недоступны на устройстве")
             throw .locationNotAvailable
         }
     }

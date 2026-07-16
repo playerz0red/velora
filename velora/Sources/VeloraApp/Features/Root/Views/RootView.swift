@@ -23,15 +23,15 @@ struct RootView: View {
     
     var body: some View {
         ZStack {
-            if viewModel.isSigned {
-                UserFormView(viewModel: userFormFactory.buildUserFormViewModel())
-            } else {
+            switch viewModel.currentState {
+            case .auth:
                 AuthFlowView(authFactory: authFactory)
-                    .onAppear {
-                        viewModel.signOut()
-                    }
+            case .form:
+                UserFormView(viewModel: userFormFactory.buildUserFormViewModel(onSubmit: viewModel.onFormSubmit))
+            case .main:
+                MainView()
             }
         }
-        .animation(.bouncy, value: viewModel.isSigned)
+        .animation(.bouncy, value: viewModel.currentState)
     }
 }

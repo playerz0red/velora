@@ -19,78 +19,54 @@ struct CustomHStack: Layout {
     }
     
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        var currentX: CGFloat = .zero
-        var currentY: CGFloat = .zero
-        var maxItemHeight: CGFloat = .zero
-        var maxWidth: CGFloat = .zero
-        
-        subviews.forEach { subview in
-            let itemSize = subview.sizeThatFits(proposal)
-            
-            if currentX + itemSize.width >= horizontalLimit {
-                currentY += maxItemHeight
-                currentY += spacing
-                currentX = itemSize.width + spacing
-                maxItemHeight = itemSize.height
-                return
-            }
-            
-            currentX += itemSize.width
-            currentX += spacing
-            
-            if itemSize.height > maxItemHeight {
-                maxItemHeight = itemSize.height
-            }
-            
-            if currentX > maxWidth {
-                maxWidth = currentX
-            }
-            
-            if currentX >= horizontalLimit {
-                
-                currentY += maxItemHeight
-                currentY += spacing
-                currentX = .zero
-                maxItemHeight = .zero
-            }
-        }
-        
-        return CGSize(width: maxWidth, height: currentY + maxItemHeight)
+        calculateLayout(for: subviews, proposal: proposal, origin: .zero).size
     }
     
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        var currentX: CGFloat = bounds.minX
-        var currentY: CGFloat = bounds.minY
-        var maxItemHeight: CGFloat = .zero
+        let layout = calculateLayout(for: subviews, proposal: proposal, origin: bounds.origin)
         
-        subviews.forEach { subview in
+        for (subview, frame) in zip(subviews, layout.frames) {
+            subview.place(
+                at: frame.origin,
+                anchor: UnitPoint.topLeading,
+                proposal: ProposedViewSize(frame.size)
+            )
+        }
+    }
+    
+    private func calculateLayout(
+        for subviews: Subviews,
+        proposal: ProposedViewSize,
+        origin: CGPoint
+    ) -> (size: CGSize, frames: [CGRect]) {
+        
+        var currentX: CGFloat = origin.x
+        var currentY: CGFloat = origin.y
+        var maxItemHeight: CGFloat = .zero
+        var maxWidth: CGFloat = .zero
+        var frames: [CGRect] = []
+        
+        for subview in subviews {
             let itemSize = subview.sizeThatFits(proposal)
             
-            if currentX + itemSize.width >= horizontalLimit + bounds.minX {
-                currentY += maxItemHeight
-                currentY += spacing
-                currentX = bounds.minX
-                maxItemHeight = itemSize.height
-                subview.place(at: CGPoint(x: currentX, y: currentY), anchor: UnitPoint.topLeading, proposal: proposal)
-                currentX += itemSize.width + spacing
-                return
-            }
-            
-            subview.place(at: CGPoint(x: currentX, y: currentY), anchor: UnitPoint.topLeading, proposal: proposal)
-            
-            currentX += itemSize.width
-            currentX += spacing
-            
-            if itemSize.height > maxItemHeight {
-                maxItemHeight = itemSize.height
-            }
-            
-            if currentX >= horizontalLimit + bounds.minX {
-                currentY += maxItemHeight
-                currentY += spacing
-                currentX = bounds.minX
+            if currentX + itemSize.width > origin.x + horizontalLimit && currentX > origin.x {
+                maxWidth = max(maxWidth, currentX - origin.x - spacing)
+                
+                currentY += maxItemHeight + spacing
+                currentX = origin.x
                 maxItemHeight = .zero
             }
+            
+            let frame = CGRect(origin: CGPoint(x: currentX, y: currentY), size: itemSize)
+            frames.append(frame)
+            
+            currentX += itemSize.width + spacing
+            maxItemHeight = max(maxItemHeight, itemSize.height)
         }
+        
+        maxWidth = max(maxWidth, currentX > origin.x ? currentX - origin.x - spacing : .zero)
+        let totalHeight = (currentY + maxItemHeight) - origin.y
+        
+        return (CGSize(width: maxWidth, height: totalHeight), frames)
     }
 }

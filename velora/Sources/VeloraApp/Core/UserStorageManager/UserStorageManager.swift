@@ -7,20 +7,22 @@
 
 import Foundation
 import SkipFirebaseFirestore
+import OSLog
 
 protocol UserStorageManagerProtocol: Sendable {
     func createUserProfile(name: String?, lastName: String?, email: String?, id: String) async throws(UserStorageError)
     func addUserAvatar(forUserId: String, avatarId: String) async throws(UserStorageError)
     func getUserAvatarPath(forUserId id: String) async throws(UserStorageError) -> [String]?
     func getUser(with id: String) async -> UserDTO?
-    func updateUserForm(userFormDto: UserFormDTO, userId: String) async throws
+    func updateUserForm(userFormDto: UserFormDTO, userId: String) async throws(UserStorageError)
 }
 
 final class UserStorageManager: UserStorageManagerProtocol {
     
     private let database = Firestore.firestore()
+    private let logger = Logger(subsystem: Logger.subsystem, category: "UserStorageManager")
     
-    func updateUserForm(userFormDto: UserFormDTO, userId: String) async throws {
+    func updateUserForm(userFormDto: UserFormDTO, userId: String) async throws(UserStorageError) {
         let data: [String: Any] = [
             FirestoreFields.UserFields.education.rawValue: userFormDto.education,
             FirestoreFields.UserFields.description.rawValue: userFormDto.description,
@@ -33,7 +35,11 @@ final class UserStorageManager: UserStorageManagerProtocol {
         ]
         
         for image in userFormDto.images {
-            try await addUserAvatar(forUserId: userId, avatarId: image)
+            do {
+                try await addUserAvatar(forUserId: userId, avatarId: image)
+            } catch {
+                logger.error("\(error.message.key)")
+            }
         }
         
         do {

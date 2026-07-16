@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum UserStorageError: Error {
+enum UserStorageError: DomainError {
     case permissionDenied
     case networkError(Error)
     case unknown(Error)

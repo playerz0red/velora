@@ -20,7 +20,12 @@ final class AppDependencyContainer {
 
 extension AppDependencyContainer {
     func makeAuthFactory() -> AuthFactoryProtocol {
-        AuthFactory(dependency: .init(authManager: authManager, userStorageManager: userStorageManager, validationService: validationService))
+        AuthFactory(dependency: .init(
+            authManager: authManager,
+            userStorageManager: userStorageManager,
+            validationService: validationService,
+            userSessionManager: userSessionManager
+        ))
     }
 }
 
@@ -38,6 +43,10 @@ extension AppDependencyContainer {
 
 extension AppDependencyContainer {
     func makeRootFactory() -> RootFactoryProtocol {
-        RootFactory(authManager: authManager, userStorageManager: userStorageManager)
+        RootFactory(dependency: .init(
+            authManager: authManager,
+            userStorageManager: userStorageManager,
+            userSessionManager: userSessionManager
+        ))
     }
 }

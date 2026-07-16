@@ -9,7 +9,7 @@ import Foundation
 
 @MainActor
 protocol UserFormFactoryProtocol {
-    func buildUserFormViewModel() -> UserFormViewModel
+    func buildUserFormViewModel(onSubmit: @escaping () -> Void) -> UserFormViewModel
 }
 
 final class UserFormFactory: UserFormFactoryProtocol {
@@ -30,7 +30,7 @@ final class UserFormFactory: UserFormFactoryProtocol {
         geoDecoderManager = GeoDecodeService(networkManager: networkManager, coder: codingManager)
     }
     
-    func buildUserFormViewModel() -> UserFormViewModel {
+    func buildUserFormViewModel(onSubmit: @escaping () -> Void) -> UserFormViewModel {
         let cloudStorageService = CloudStorageService(networkManager: networkManager, coder: codingManager)
         let formUploader = UserFormService(dependency: .init(
             userSessionManager: userSessionManager,
@@ -39,7 +39,7 @@ final class UserFormFactory: UserFormFactoryProtocol {
             geoDecoder: geoDecoderManager,
             cloudStorageService: cloudStorageService
         ))
-        return UserFormViewModel(formUploader: formUploader)
+        return UserFormViewModel(formUploader: formUploader, onSubmit: onSubmit)
     }
 }
 

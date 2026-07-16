@@ -7,8 +7,19 @@
 
 import Foundation
 
-enum LocationManagerError: Error {
+enum LocationManagerError: DomainError {
     case permissionDenied
     case locationNotAvailable
     case fetchLocationError
+    
+    var message: LocalizedStringResource {
+        switch self {
+        case .permissionDenied:
+            "Permission denied"
+        case .locationNotAvailable:
+            "Location is not available"
+        case .fetchLocationError:
+            "Location fetch error"
+        }
+    }
 }
