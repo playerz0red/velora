@@ -3,7 +3,7 @@ import SwiftUI
 struct EmailView: View {
     @Bindable private var viewModel: AuthViewModel
     
-    @Environment(AppCoordinator.self)
+    @Environment(AuthCoordinator.self)
     private var coordinator
     
     init(viewModel: AuthViewModel) {
@@ -79,7 +79,7 @@ struct EmailView: View {
                 title: "Нет аккаунта?",
                 buttonLabel: "Зарегистрироваться")
             {
-                coordinator.push(.registration)
+                coordinator.push(AuthRoute.registration)
             }
         }
     }

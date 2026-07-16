@@ -40,7 +40,9 @@ struct AuthTextField: View {
                 } else {
                     TextField(placeholder, text: $text)
                         .font(.system(size: 20))
+                        #if !skip
                         .keyboardType(isSecure ? .default : .emailAddress)
+                        #endif
                         .autocorrectionDisabled()
                 }
                 

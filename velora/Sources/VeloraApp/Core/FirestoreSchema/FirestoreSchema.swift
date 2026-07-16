@@ -19,7 +19,15 @@ enum FirestoreFields {
         case name = "name"
         case email = "email"
         case createdAt = "createdAt"
-        case avatarId = "avatarId"
+        case images = "images"
         case lastName = "lastName"
+        case birthday = "birthday"
+        case location = "location"
+        case description = "description"
+        case education = "education"
+        case gender = "gender"
+        case interests = "interests"
+        case latitude = "latitude"
+        case longitude = "longitude"
     }
 }

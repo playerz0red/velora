@@ -7,17 +7,47 @@
 
 import Foundation
 import SkipFirebaseFirestore
+import OSLog
 
-protocol UserStorageManagerProtocol {
+protocol UserStorageManagerProtocol: Sendable {
     func createUserProfile(name: String?, lastName: String?, email: String?, id: String) async throws(UserStorageError)
     func addUserAvatar(forUserId: String, avatarId: String) async throws(UserStorageError)
-    func getUserAvatarPath(forUserId id: String) async throws(UserStorageError) -> String?
+    func getUserAvatarPath(forUserId id: String) async throws(UserStorageError) -> [String]?
     func getUser(with id: String) async -> UserDTO?
+    func updateUserForm(userFormDto: UserFormDTO, userId: String) async throws(UserStorageError)
 }
 
 final class UserStorageManager: UserStorageManagerProtocol {
     
     private let database = Firestore.firestore()
+    private let logger = Logger(subsystem: Logger.subsystem, category: "UserStorageManager")
+    
+    func updateUserForm(userFormDto: UserFormDTO, userId: String) async throws(UserStorageError) {
+        let data: [String: Any] = [
+            FirestoreFields.UserFields.education.rawValue: userFormDto.education,
+            FirestoreFields.UserFields.description.rawValue: userFormDto.description,
+            FirestoreFields.UserFields.birthday.rawValue: userFormDto.birthday,
+            FirestoreFields.UserFields.gender.rawValue: userFormDto.gender,
+            FirestoreFields.UserFields.interests.rawValue: userFormDto.interests,
+            FirestoreFields.UserFields.location.rawValue: userFormDto.location,
+            FirestoreFields.UserFields.longitude.rawValue: userFormDto.latitude,
+            FirestoreFields.UserFields.latitude.rawValue: userFormDto.longitude,
+        ]
+        
+        for image in userFormDto.images {
+            do {
+                try await addUserAvatar(forUserId: userId, avatarId: image)
+            } catch {
+                logger.error("\(error.message.key)")
+            }
+        }
+        
+        do {
+            try await database.collection(FirestoreCollections.users.rawValue).document(userId).updateData(data)
+        } catch let error {
+            throw castFirestoreError(error)
+        }
+    }
     
     func getUser(with id: String) async -> UserDTO? {
         try? await database.collection(FirestoreCollections.users.rawValue).document(id).getDocument(as: UserDTO.self)
@@ -38,17 +68,17 @@ final class UserStorageManager: UserStorageManagerProtocol {
         }
     }
     
-    func getUserAvatarPath(forUserId id: String) async throws(UserStorageError) -> String? {
+    func getUserAvatarPath(forUserId id: String) async throws(UserStorageError) -> [String]? {
         do {
             let document = try await database.collection(FirestoreCollections.users.rawValue).document(id).getDocument()
-            return document.get(FirestoreFields.UserFields.avatarId.rawValue) as? String
+            return document.get(FirestoreFields.UserFields.images.rawValue) as? [String]
         } catch let error {
             throw castFirestoreError(error)
         }
     }
     
     func addUserAvatar(forUserId id: String, avatarId: String) async throws(UserStorageError) {
-        let data: [String: Any] = [FirestoreFields.UserFields.avatarId.rawValue: avatarId]
+        let data: [String: Any] = [FirestoreFields.UserFields.images.rawValue: FieldValue.arrayUnion([avatarId])]
         do {
             try await database.collection(FirestoreCollections.users.rawValue).document(id).updateData(data)
         } catch let error {

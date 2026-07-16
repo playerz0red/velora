@@ -7,7 +7,9 @@
 
 import Foundation
 import SkipFirebaseAuth
+#if canImport(UIKit)
 import UIKit
+#endif
 
 #if !skip
 import AuthenticationServices

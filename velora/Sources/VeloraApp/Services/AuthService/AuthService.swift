@@ -11,6 +11,7 @@ import Combine
 protocol AuthServiceProtocol: Sendable {
     var signPublisher: AnyPublisher<Bool, Never> { get }
     
+    func hasFilledInfo() async -> Bool
     func signUp(name: String, lastName: String, email: String, password: String) async throws(AuthServiceError)
     func signIn(email: String, password: String) async throws(AuthServiceError)
     func signWithGoogle() async throws(AuthServiceError)
@@ -22,15 +23,23 @@ protocol AuthServiceProtocol: Sendable {
 final class AuthService: AuthServiceProtocol, @unchecked Sendable {
     
     private let authManager: AuthManagerProtocol
+    private let userSessionManager: UserSessionProtocol
     private let userStorageManager: UserStorageManagerProtocol
     
-    init(authManager: AuthManagerProtocol, userStorageManager: UserStorageManagerProtocol) {
-        self.authManager = authManager
-        self.userStorageManager = userStorageManager
+    init(dependency: Dependency) {
+        self.authManager = dependency.authManager
+        self.userSessionManager = dependency.userSessionManager
+        self.userStorageManager = dependency.userStorageManager
     }
     
     var signPublisher: AnyPublisher<Bool, Never> {
         authManager.isSignedPublisher
+    }
+    
+    func hasFilledInfo() async -> Bool {
+        guard let id = userSessionManager.userId else { return false }
+        guard let user = await userStorageManager.getUser(with: id) else { return false }
+        return true
     }
     
     func signUp(name: String, lastName: String, email: String, password: String) async throws(AuthServiceError) {
@@ -100,5 +109,13 @@ final class AuthService: AuthServiceProtocol, @unchecked Sendable {
         } catch let error {
             throw .changePasswordError(error)
         }
+    }
+}
+
+extension AuthService {
+    struct Dependency {
+        let authManager: AuthManagerProtocol
+        let userSessionManager: UserSessionProtocol
+        let userStorageManager: UserStorageManagerProtocol
     }
 }

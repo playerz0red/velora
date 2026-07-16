@@ -4,7 +4,7 @@ struct AuthView: View {
     
     @Bindable private var viewModel: AuthViewModel
     
-    @Environment(AppCoordinator.self)
+    @Environment(AuthCoordinator.self)
     private var coordinator
     
     init(viewModel: AuthViewModel) {

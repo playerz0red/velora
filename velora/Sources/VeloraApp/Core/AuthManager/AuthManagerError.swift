@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum AuthManagerError: Error {
+enum AuthManagerError: DomainError {
     case emailIsAlreadyInUse
     case userNotFound
     case missGoogleIdToken
@@ -26,11 +26,11 @@ enum AuthManagerError: Error {
         case .userNotFound:
             "User not fount"
         case .invalidEmail(let error):
-            "invalid email: \(error.localizedDescription)"
+            "Invalid email: \(error.localizedDescription)"
         case .networkError(let error):
-            "network error: \(error.localizedDescription)"
+            "Network error: \(error.localizedDescription)"
         case .unknown(let error):
-            "unknown error: \(error.localizedDescription)"
+            "Unknown error: \(error.localizedDescription)"
         case .missGoogleIdToken:
             "Missing google token"
         case .userCancelledSignIn:

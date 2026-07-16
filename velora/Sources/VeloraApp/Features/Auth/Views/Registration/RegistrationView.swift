@@ -3,7 +3,7 @@ import SwiftUI
 struct RegistrationView: View {
     @Bindable private var viewModel: RegisterViewModel
     
-    @Environment(AppCoordinator.self)
+    @Environment(AuthCoordinator.self)
     private var coordinator
     
     init(viewModel: RegisterViewModel) {

@@ -15,7 +15,7 @@ import AuthenticationServices
 import GoogleSignIn
 #endif
 
-protocol AuthManagerProtocol {
+protocol AuthManagerProtocol: Sendable {
     var isSignedPublisher: AnyPublisher<Bool, Never> { get }
     var isSignedIn: Bool { get }
     
@@ -27,7 +27,7 @@ protocol AuthManagerProtocol {
     func signWithGoogle() async throws(AuthManagerError) -> AuthUserModel?
 }
 
-protocol UserSessionProtocol {
+protocol UserSessionProtocol: Sendable {
     var userId: String? { get }
     var username: String? { get }
     
@@ -105,15 +105,18 @@ final class FirebaseAuthManager: AuthManagerProtocol, UserSessionProtocol, @unch
     }
     
     func signWithGoogle() async throws(AuthManagerError) -> AuthUserModel? {
+        #if skip
+        // Логика для Android (пока можно оставить пустой или выкинуть ошибку)
+        print("Google Sign-In для Android еще не реализован")
+        return nil
+        #else
         guard let clientID = FirebaseApp.app()?.options.clientID else { throw .emailIsAlreadyInUse }
         let config = GIDConfiguration(clientID: clientID)
         GIDSignIn.sharedInstance.configuration = config
         
-        guard let topViewController = await Utils.getTopViewController() else {
-            throw .unknown(NSError(domain: "Auth", code: -2, userInfo: [NSLocalizedDescriptionKey: "UI not ready"]))
-        }
-        
+        guard let topViewController = await Utils.getTopViewController() else { return nil }
         return try await googleSignInLogic(topViewController: topViewController)
+        #endif
     }
     
     func signInWithApple() async throws(AuthManagerError) -> AuthUserModel? {
@@ -186,6 +189,7 @@ final class FirebaseAuthManager: AuthManagerProtocol, UserSessionProtocol, @unch
         #endif
     }
     
+    #if !skip
     private func googleSignInLogic(topViewController: UIViewController) async throws(AuthManagerError) -> AuthUserModel? {
         do {
             let result = try await GIDSignIn.sharedInstance.signIn(withPresenting: topViewController)
@@ -219,6 +223,7 @@ final class FirebaseAuthManager: AuthManagerProtocol, UserSessionProtocol, @unch
              throw castFirebaseError(error)
         }
     }
+    #endif
     
     private func listenToAuthState() {
         handle = Auth.auth().addStateDidChangeListener { [weak self] (auth, user) in

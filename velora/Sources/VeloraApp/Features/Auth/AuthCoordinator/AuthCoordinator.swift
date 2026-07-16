@@ -2,12 +2,17 @@ import SwiftUI
 
 @Observable
 @MainActor
-final class AppCoordinator {
+final class AuthCoordinator {
     
-    private let factory = AppFactory()
     var path = NavigationPath()
     
-    func push (_ route: AppRoute) {
+    private let authFactory: AuthFactoryProtocol
+    
+    init(authFactory: AuthFactoryProtocol) {
+        self.authFactory = authFactory
+    }
+    
+    func push (_ route: AuthRoute) {
         path.append(route)
     }
     
@@ -21,24 +26,23 @@ final class AppCoordinator {
     }
 }
 
-extension AppCoordinator {
+extension AuthCoordinator {
     @ViewBuilder
-    func destination(for route: AppRoute) -> some View {
+    func destination(for route: AuthRoute) -> some View {
         switch route {
         case .auth:
             AuthView(
-                viewModel: factory.makeAuthViewModel()
+                viewModel: authFactory.buildAuthViewModel()
             )
             
         case .email:
-//            EmailView(
-//                viewModel: factory.makeAuthViewModel()
-//            )
-            MainView()
+            EmailView(
+                viewModel: authFactory.buildAuthViewModel()
+            )
             
         case .registration:
             RegistrationView(
-                viewModel: factory.makeRegistrationViewModel()
+                viewModel: authFactory.buildRegistrationViewModel()
             )
             
         case .home:
